@@ -37,10 +37,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		Map<String, Object> response = Map.of(
 				"timestamp", LocalDateTime.now(),
 				"status", HttpStatus.NOT_FOUND.value(),
-				"error", "Id not found to update",
+				"error", "Resource not found",
 				"message", ex.getMessage()
 		);
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);		
+	}
+	
+	@ExceptionHandler(EmptyListException.class)
+	public ResponseEntity<Object> handleEmptyException(EmptyListException ex) {
+		Map<String, Object> response = Map.of(
+				"timestamp", LocalDateTime.now(),
+				"status", HttpStatus.NOT_FOUND.value(),
+				"error", "no datas found",
+				"message", ex.getMessage()
+		);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 }
 

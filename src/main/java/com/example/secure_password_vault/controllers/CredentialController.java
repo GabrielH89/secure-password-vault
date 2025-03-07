@@ -1,6 +1,7 @@
 package com.example.secure_password_vault.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,12 @@ public class CredentialController {
 	@GetMapping
 	public List<Credential> getAll() {
 		return credentialService.getAllCredentials();
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Credential> getById(@PathVariable long id) {
+		Credential credential = credentialService.getCredentialById(id);
+		return ResponseEntity.status(200).body(credential);
 	}
 	
 	@PostMapping
