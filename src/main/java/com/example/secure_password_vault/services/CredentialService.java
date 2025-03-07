@@ -46,11 +46,29 @@ public class CredentialService {
 		var credential = credentialRepository.findById(id)
 				.orElseThrow(() -> new NoSuchElementException("Credential with id " + id + " not found"));
 		
-		
 		credential.setSystemName(updateCredentialDto.systemName());
 		credential.setPasswordBody(updateCredentialDto.passwordBody());
 		
 		return credentialRepository.save(credential);
+	}
+	
+	public void deleteAllCredentials() {
+		var credentials = credentialRepository.findAll();
+		
+		if(credentials.isEmpty()) {
+			throw new EmptyListException("Credentials not found");
+		}
+		credentialRepository.deleteAll(credentials);
+	}
+	
+	public Credential deleteCredentialById(long id) {
+		var credential = credentialRepository.findById(id);
+		if(credential.isPresent()) {
+			credentialRepository.deleteById(id);
+			return credential.get();
+		}else {
+			throw new NoSuchElementException("Element with id " + id + " not found");
+		}
 	}
 }
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,5 +47,17 @@ public class CredentialController {
 	public ResponseEntity<Credential> updateById(@PathVariable long id, @RequestBody UpdateCredentialDto updateCredentialDto) {
 		Credential updatedCredential = credentialService.updateCredentialById(id, updateCredentialDto);
 		return ResponseEntity.status(200).body(updatedCredential);
+	}
+	
+	@DeleteMapping
+	public ResponseEntity<Void> deleteAll() {
+		credentialService.deleteAllCredentials();
+		return ResponseEntity.noContent().build();
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Credential> deleteById(@PathVariable long id) {
+		credentialService.deleteCredentialById(id);
+		return ResponseEntity.noContent().build();
 	}
 }
