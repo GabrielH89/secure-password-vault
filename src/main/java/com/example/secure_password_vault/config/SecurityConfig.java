@@ -18,26 +18,28 @@ import com.example.secure_password_vault.security.SecurityFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	@Autowired
-	SecurityFilter securityFilter;
-	
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http
-				.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth
-					.requestMatchers("/credentials/**", "/h2-console/**").permitAll()
-					.anyRequest().authenticated()
-				)
-				.sessionManagement(session -> session
-		                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		            )
-				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-		        .build();
-	}
-	
-	 	@Bean
+	 
+		@Autowired
+		SecurityFilter securityFilter;
+		
+	    @Bean
+	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	        return http
+	            .csrf(csrf -> csrf.disable()) // Desabilita CSRF (necessário para H2 Console)
+	            .authorizeHttpRequests(auth -> auth
+	            		.requestMatchers("/auth/register", "/auth/login", "/h2-console/**").permitAll()
+	            		.requestMatchers("/credentials/**").authenticated()
+	                .anyRequest().authenticated()
+	            )
+	            .sessionManagement(session -> session
+	                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+	            )
+	            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+	            .build();
+	 
+	    }
+	    
+	    @Bean
 	    public PasswordEncoder passwordEncoder() {
 	        return new BCryptPasswordEncoder();
 	    }

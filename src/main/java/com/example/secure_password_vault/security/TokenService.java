@@ -16,7 +16,7 @@ import com.example.secure_password_vault.entities.User;
 public class TokenService {
 	
 	@Value("${api.security.token.secret}")
-	private String secret;
+	private String secret;//Essa variável contém a variável de ambiente JWT lá do application.properties
 	
 	public String generateToken(User user) {
 		try {
@@ -28,7 +28,7 @@ public class TokenService {
 					.sign(algorithm);
 			return token;
 		}catch(JWTCreationException e) {
-			throw new RuntimeException("Error " + e);
+			throw new RuntimeException("Error: ", e);
 		}
 	}
 	

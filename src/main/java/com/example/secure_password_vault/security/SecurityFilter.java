@@ -11,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
