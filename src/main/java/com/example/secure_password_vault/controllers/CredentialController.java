@@ -1,8 +1,6 @@
 package com.example.secure_password_vault.controllers;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
+import com.example.secure_password_vault.dtos.credential.ShowCredentialDto;
 import com.example.secure_password_vault.dtos.credential.UpdateCredentialDto;
 import com.example.secure_password_vault.entities.Credential;
 import com.example.secure_password_vault.services.CredentialService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/credentials")
@@ -27,19 +28,19 @@ public class CredentialController {
 	CredentialService credentialService;
 	
 	@GetMapping
-	public List<Credential> getAll() {
-		return credentialService.getAllCredentials();
+	public List<ShowCredentialDto> getAll(HttpServletRequest request) {
+		return credentialService.getAllCredentials(request);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Credential> getById(@PathVariable long id) {
-		Credential credential = credentialService.getCredentialById(id);
+	public ResponseEntity<ShowCredentialDto> getById(@PathVariable long id) {
+		ShowCredentialDto credential = credentialService.getCredentialById(id);
 		return ResponseEntity.status(200).body(credential);
 	}
 	
 	@PostMapping
-    public ResponseEntity<Credential> create(@RequestBody CreateCredentialDto createDto) {
-        Credential createdCredential = credentialService.createCredential(createDto);
+    public ResponseEntity<ShowCredentialDto> create(@RequestBody CreateCredentialDto createDto, HttpServletRequest request) {
+        ShowCredentialDto createdCredential = credentialService.createCredential(createDto, request);
         return ResponseEntity.status(201).body(createdCredential);  
     }
 	
@@ -61,3 +62,5 @@ public class CredentialController {
 		return ResponseEntity.noContent().build();
 	}
 }
+
+
