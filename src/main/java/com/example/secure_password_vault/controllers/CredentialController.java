@@ -33,8 +33,8 @@ public class CredentialController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<ShowCredentialDto> getById(@PathVariable long id) {
-		ShowCredentialDto credential = credentialService.getCredentialById(id);
+	public ResponseEntity<ShowCredentialDto> getById(HttpServletRequest request, @PathVariable long id) {
+		ShowCredentialDto credential = credentialService.getCredentialById(request, id);
 		return ResponseEntity.status(200).body(credential);
 	}
 	
@@ -45,20 +45,21 @@ public class CredentialController {
     }
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Credential> updateById(@PathVariable long id, @RequestBody UpdateCredentialDto updateCredentialDto) {
-		Credential updatedCredential = credentialService.updateCredentialById(id, updateCredentialDto);
+	public ResponseEntity<ShowCredentialDto> updateById(HttpServletRequest request, 
+			@PathVariable long id, @RequestBody UpdateCredentialDto updateCredentialDto) {
+		ShowCredentialDto updatedCredential = credentialService.updateCredentialById(request, id, updateCredentialDto);
 		return ResponseEntity.status(200).body(updatedCredential);
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<Void> deleteAll() {
-		credentialService.deleteAllCredentials();
+	public ResponseEntity<Void> deleteAll(HttpServletRequest request) {
+		credentialService.deleteAllCredentials(request);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Credential> deleteById(@PathVariable long id) {
-		credentialService.deleteCredentialById(id);
+	public ResponseEntity<Void> deleteById(HttpServletRequest request, @PathVariable long id) {
+		credentialService.deleteCredentialById(request, id);
 		return ResponseEntity.noContent().build();
 	}
 }

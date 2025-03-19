@@ -47,18 +47,22 @@ public class CredentialService {
 		}	
 	}
 	
-	public ShowCredentialDto getCredentialById(long id) {
-		var credential = credentialRepository.findById(id);
-		if(credential.isPresent()) {
-			var credentialEntity = credential.get();
-			return new ShowCredentialDto(
-				credentialEntity.getSystemName(), 
-				credentialEntity.getPasswordBody(), 
-				credentialEntity.getCreatedAt(), 
-				credentialEntity.getUpdatedAt());
-		}else{
-			throw new NoSuchElementException("Credential with id " + id + " not found");
+	public ShowCredentialDto getCredentialById(HttpServletRequest request, long id) {
+		long userId = (Long) request.getAttribute("userId");
+		
+		var credential = credentialRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("Credential with id \" + id + \" not found"));
+		
+		if(credential.getUser().getId() != userId) {
+			throw new SecurityException("You are not authorized to delete this credential");
 		}
+		
+		return new ShowCredentialDto(
+			credential.getSystemName(),
+			credential.getPasswordBody(),
+			credential.getCreatedAt(),
+			credential.getUpdatedAt()
+		);
 	}
 	
 	@Transactional
@@ -80,18 +84,35 @@ public class CredentialService {
 	    }
 
 	
-	public Credential updateCredentialById(long id, UpdateCredentialDto updateCredentialDto) {
+	public ShowCredentialDto updateCredentialById(HttpServletRequest request, long id, UpdateCredentialDto updateCredentialDto) {
+		long userId = (Long) request.getAttribute("userId");
+		
 		var credential = credentialRepository.findById(id)
 				.orElseThrow(() -> new NoSuchElementException("Credential with id " + id + " not found"));
+	
+		if (credential.getUser().getId() != userId) {
+	        throw new SecurityException("You do not have permission to update this credential");
+	    }
+		
 		
 		credential.setSystemName(updateCredentialDto.systemName());
 		credential.setPasswordBody(updateCredentialDto.passwordBody());
+		credential.setUpdatedAt(updateCredentialDto.updateAt());
 		
-		return credentialRepository.save(credential);
+		credentialRepository.save(credential);
+		
+		
+		return new ShowCredentialDto(
+				credential.getSystemName(),
+				credential.getPasswordBody(),
+				credential.getCreatedAt(),
+				credential.getUpdatedAt()
+		);
 	}
 	
-	public void deleteAllCredentials() {
-		var credentials = credentialRepository.findAll();
+	public void deleteAllCredentials(HttpServletRequest request) {
+		long userId = (Long) request.getAttribute("userId");
+		List<Credential> credentials = credentialRepository.findByUserId(userId);
 		
 		if(credentials.isEmpty()) {
 			throw new EmptyListException("Credentials not found");
@@ -99,13 +120,17 @@ public class CredentialService {
 		credentialRepository.deleteAll(credentials);
 	}
 	
-	public Credential deleteCredentialById(long id) {
-		var credential = credentialRepository.findById(id);
-		if(credential.isPresent()) {
-			credentialRepository.deleteById(id);
-			return credential.get();
-		}else {
-			throw new NoSuchElementException("Element with id " + id + " not found");
-		}
+	public void deleteCredentialById(HttpServletRequest request, long id) {
+		long userId = (Long) request.getAttribute("userId");
+
+	    // Busca a credencial pelo ID e verifica se pertence ao usuário logado
+	    Credential credential = credentialRepository.findById(id)
+	        .orElseThrow(() -> new NoSuchElementException("Credential with id " + id + " not found"));
+
+	    if (credential.getUser().getId() != userId) {
+	        throw new SecurityException("You do not have permission to delete this credential");
+	    }
+
+	    credentialRepository.deleteById(id);
 	}
 }

@@ -1,5 +1,7 @@
 package com.example.secure_password_vault.dtos.credential;
 
-public record UpdateCredentialDto(String systemName, String passwordBody) {
+import java.time.LocalDateTime;
+
+public record UpdateCredentialDto(String systemName, String passwordBody, LocalDateTime updateAt) {
 
 }
