@@ -25,7 +25,7 @@ import jakarta.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 	@Autowired
 	UserRepository userRepository;
@@ -41,8 +41,6 @@ public class AuthController {
 	
 	@Autowired
 	TokenService tokenService;
-	
-	
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody CreateUserDto createUserDto) {

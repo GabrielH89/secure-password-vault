@@ -25,6 +25,7 @@ public class SecurityConfig {
 	    @Bean
 	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	        return http	
+	        	.cors(cors -> cors.disable())
 	            .csrf(csrf -> csrf.disable()) // Desabilita CSRF (necessário para H2 Console)
 	            .authorizeHttpRequests(auth -> auth
 	            		.requestMatchers("/auth/register", "/auth/login", "/h2-console/**").permitAll()
