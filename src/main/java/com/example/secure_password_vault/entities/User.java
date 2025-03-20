@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -32,11 +33,19 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	@NotBlank(message = "Email cannot be empty")
 	@Size(max = 600, message = "Email cannot be longer than 600 characters")
+	@Pattern(
+			regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+			message = "Invalid email format"
+			)
 	private String email;
 	
 	@Column(nullable = false)
 	@NotBlank(message = "System name cannot be empty")
 	@Size(max = 300, message = "Password cannot be longer than 300 characters")
+	@Pattern(
+			regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$",
+	        message = "Password must contain at least one letter, one number, and one special character"
+	        )
 	private String password;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

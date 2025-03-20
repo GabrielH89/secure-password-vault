@@ -20,6 +20,9 @@ import com.example.secure_password_vault.repositories.UserRepository;
 import com.example.secure_password_vault.security.TokenService;
 import com.example.secure_password_vault.services.UserService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
@@ -38,6 +41,8 @@ public class AuthController {
 	
 	@Autowired
 	TokenService tokenService;
+	
+	
 	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody CreateUserDto createUserDto) {
