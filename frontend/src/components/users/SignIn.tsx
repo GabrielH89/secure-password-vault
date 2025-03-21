@@ -2,11 +2,14 @@ import { useState } from "react"
 import axios, { AxiosError } from "axios"
 import { Link, useNavigate } from "react-router-dom";
 import '../../styles/users/SignIn.css';
+import Modal from "./Modal";
+import SignUp from "./SignUp";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSignUpOpen, setSignUpOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: {preventDefault: () => void;}) => {
@@ -67,29 +70,15 @@ return (
       <div className='login-btn'>
           <button type="submit" onClick={handleLogin}>Login</button>
       </div>
-      <p>Não possui uma conta? <Link to={"/"}>Cadastre-se</Link></p>
+      <p>Não possui uma conta? <Link to="#" onClick={() => setSignUpOpen(true)}>Cadastre-se</Link></p>
   </form>
+  <Modal isOpen={isSignUpOpen} onClose={() => setSignUpOpen(false)}>
+    <SignUp/>
+  </Modal>
   </div>
 )
 
-  /*useEffect(() => {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6Implc3NpY2FAZ21haWwuY29tIiwiZXhwIjoxNzQyNTA5NjEzfQ.qjpAYYQFXrDdGZS7ZGl9Z6ReBAbDPe5prMtNzx5XmLI";
-    axios.get("http://localhost:8080/credentials", {
-      headers: {
-        Authorization: `Bearer ${token}` // Envia o token no cabeçalho
-      }
-    })
-    .then(response => {
-      console.log("Dados do backend:", response.data);
-    })
-    .catch(error => {
-      console.error("Erro ao buscar os dados:", error);
-    });
-  }, []);
-
-  return (
-    <div>SignIn</div>
-  )*/
+ 
 }
 
 export default SignIn

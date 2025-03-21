@@ -1,0 +1,96 @@
+.signUpForm {
+    max-width: 400px;
+    height: 550px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border 0.3s ease-in-out;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.signUp-btn {
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+p {
+    font-size: 0.85rem; /* Deixando as letras pequenas */
+    text-align: center;
+    color: #666;
+}
+
+.error-message {
+    background-color: #B22222;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 500px) {
+    .signUpForm {
+        width: 90%;
+        padding: 15px;
+    }
+
+    input {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+}
