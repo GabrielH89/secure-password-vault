@@ -39,6 +39,7 @@ public class CredentialService {
 		}else {
 			return credentials.stream()
 					.map(credential -> new ShowCredentialDto(
+							credential.getId_password(),
 							credential.getSystemName(), 
 							credential.getPasswordBody(), 
 							credential.getCreatedAt(), 
@@ -58,6 +59,7 @@ public class CredentialService {
 		}
 		
 		return new ShowCredentialDto(
+			credential.getId_password(),
 			credential.getSystemName(),
 			credential.getPasswordBody(),
 			credential.getCreatedAt(),
@@ -79,7 +81,7 @@ public class CredentialService {
 	        );
 	        credential.setUser(user); 
 	        var credentialSaved = credentialRepository.save(credential);
-	        return new ShowCredentialDto(credentialSaved.getSystemName(), credentialSaved.getPasswordBody(), 
+	        return new ShowCredentialDto(credentialSaved.getId_password(), credentialSaved.getSystemName(), credentialSaved.getPasswordBody(), 
 	        		credentialSaved.getCreatedAt(), credentialSaved.getUpdatedAt());
 	    }
 
@@ -103,6 +105,7 @@ public class CredentialService {
 		
 		
 		return new ShowCredentialDto(
+				credential.getId_password(),
 				credential.getSystemName(),
 				credential.getPasswordBody(),
 				credential.getCreatedAt(),

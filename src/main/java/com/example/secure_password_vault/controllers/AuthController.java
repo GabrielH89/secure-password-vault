@@ -54,23 +54,25 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDto> login(@RequestBody LoginUserDto loginUserDto) {
 	    var user = userRepository.findByEmail(loginUserDto.email());
-	    
+
 	    if (user == null) {
 	        return ResponseEntity.status(404).body(new LoginResponseDto("Invalid email or password"));
 	    }
 
 	    try {
-	        // O Spring Security vai validar a senha internamente
 	        var authenticationToken = new UsernamePasswordAuthenticationToken(loginUserDto.email(), loginUserDto.password());
 	        var authentication = authenticationManager.authenticate(authenticationToken);
-	        
-	        var token = tokenService.generateToken((User) authentication.getPrincipal());
-	        
-	        return ResponseEntity.ok(new LoginResponseDto(token));
+
+	        var userAuthenticated = (User) authentication.getPrincipal(); // Converte para User
+	        var token = tokenService.generateToken(userAuthenticated);
+
+	        return ResponseEntity.ok(new LoginResponseDto(token, userAuthenticated.getId()));
 	    } catch (Exception e) {
 	        return ResponseEntity.status(401).body(new LoginResponseDto("Invalid email or password"));
 	    }
 	}
+
+
 
 	
 }

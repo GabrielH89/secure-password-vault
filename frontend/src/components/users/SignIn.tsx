@@ -21,9 +21,9 @@ function SignIn() {
                 password: password
             });
             console.log("Response: " + response.data);
-            const {token, id} = response.data; // Supondo que o token esteja na resposta como 'token'
+            const {token, userId} = response.data; // Supondo que o token esteja na resposta como 'token'
             sessionStorage.setItem('token', token);
-            sessionStorage.setItem('id', id);
+            sessionStorage.setItem('userId', userId);
             navigate("/home");
             
         }else{
