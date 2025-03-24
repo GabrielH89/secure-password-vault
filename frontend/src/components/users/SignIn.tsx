@@ -27,7 +27,10 @@ function SignIn() {
             navigate("/hello");
             
         }else{
-            alert("Preencha o email e senha");
+            setErrorMessage("Insira seu e-mail e senha");
+            setTimeout(() => {
+                setErrorMessage("");
+            }, 3000)
         }
     }catch(error) {
         if ((error as AxiosError).response && (error as AxiosError).response?.status === 404) {
