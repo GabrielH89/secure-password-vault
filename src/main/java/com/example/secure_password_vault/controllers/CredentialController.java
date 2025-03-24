@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/credentials")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173")
 public class CredentialController {
 	
 	@Autowired

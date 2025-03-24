@@ -24,7 +24,7 @@ function SignIn() {
             const {token, id} = response.data; // Supondo que o token esteja na resposta como 'token'
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('id', id);
-            navigate("/hello");
+            navigate("/home");
             
         }else{
             setErrorMessage("Insira seu e-mail e senha");
