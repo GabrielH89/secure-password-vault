@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import '../../styles/credentials/Home.css';
 import AddCredential from "./AddCredential";
 import Modal from "../users/Modal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface Credential {
   id_password: number;
@@ -17,6 +17,8 @@ interface Credential {
 function Home() {
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [isAddCredentialOpen, setIsAddCredentialOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [credentialToDelete, setCredentialToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -36,14 +38,21 @@ function Home() {
     fetchCredentials();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const confirmDelete = (id: number) => {
+    setCredentialToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+
+  const handleDelete = async () => {
+    if (!credentialToDelete) return;
     try {
       const token = sessionStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/credentials/${id}`, {
+      await axios.delete(`http://localhost:8080/credentials/${credentialToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Id " + id);
-      setCredentials(credentials.filter(cred => cred.id_password !== id)); // Remove do estado
+      setCredentials(credentials.filter(cred => cred.id_password !== credentialToDelete)); // Remove do estado
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error("Erro ao deletar credencial:", error);
     }
@@ -61,7 +70,7 @@ function Home() {
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
-          <AddCredential />
+          <AddCredential onClose={() => setIsAddCredentialOpen(false)} />
         </Modal>
       </div>
 
@@ -75,12 +84,18 @@ function Home() {
             <div className="card-actions">
               <button onClick={() => handleUpdate(cred.id_password)} className="edit-button">Editar
               </button>
-              <button onClick={() => handleDelete(cred.id_password)} className="delete-button">Deletar
+              <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar
               </button>
             </div>
           </div>
         ))}
       </div>
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={()  => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+      >
+      </ConfirmDeleteModal>
     </div>
   );
 }

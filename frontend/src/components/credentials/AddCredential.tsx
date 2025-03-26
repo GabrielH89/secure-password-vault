@@ -1,15 +1,13 @@
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../../styles/credentials/AddCredential.css";
 
-function AddCredential() {
+function AddCredential({ onClose }: { onClose: () => void }) {
     const [systemName, setSystemName] = useState("");
     const [passwordBody, setPasswordBody] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
 
     const addCredential = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,7 +24,8 @@ function AddCredential() {
             setSystemName("");
             setPasswordBody("");
             alert("Credential cadastrada com sucesso");
-            navigate("/home");
+            setShowPassword(false);
+            onClose();
         } catch (error) {
             const axiosError = error as AxiosError;
             if (axiosError.response?.status === 400) {
