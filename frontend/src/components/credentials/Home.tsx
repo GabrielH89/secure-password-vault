@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import '../../styles/credentials/Home.css';
+import AddCredential from "./AddCredential";
+import Modal from "../users/Modal";
 
 interface Credential {
   id_password: number;
@@ -14,7 +16,7 @@ interface Credential {
 
 function Home() {
   const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isAddCredentialOpen, setIsAddCredentialOpen] = useState(false);
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -56,8 +58,11 @@ function Home() {
     <div>
       <h1>Bem-vindo(a), User</h1>
 
-      <div>
-        <button>Add credential</button>
+      <div className="addCredentialOpen">
+        <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
+        <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
+          <AddCredential />
+        </Modal>
       </div>
 
       <div className="credentials-container">
@@ -68,7 +73,7 @@ function Home() {
             <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()}</p>
             <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()}</p>
             <div className="card-actions">
-              <button onClick={() => handleUpdate(cred.id_password)} className="edit-button">
+              <button onClick={() => handleUpdate(cred.id_password)} className="edit-button">Editar
               </button>
               <button onClick={() => handleDelete(cred.id_password)} className="delete-button">Deletar
               </button>

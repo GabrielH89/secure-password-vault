@@ -1,21 +1,25 @@
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import "../../styles/credentials/AddCredential.css";
 
 function AddCredential() {
     const [systemName, setSystemName] = useState("");
     const [passwordBody, setPasswordBody] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const addCredential = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const userData = { systemName, passwordBody };
-
+            const token = sessionStorage.getItem('token');
             await axios.post("http://localhost:8080/credentials", userData, {
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
             });
 
@@ -43,20 +47,27 @@ function AddCredential() {
                         type="text" 
                         value={systemName} 
                         onChange={(e) => setSystemName(e.target.value)}
-                        maxLength={255} 
+                        maxLength={200} 
                         required 
                     />
                 </div>
                 <div className="formGroup">
                     <label>Senha</label>
                     <input 
-                        type="password" 
+                        type={showPassword ? "text" : "password"} 
                         value={passwordBody} 
                         onChange={(e) => setPasswordBody(e.target.value)} 
-                        maxLength={600} 
+                        maxLength={500} 
                         required 
                     />
                 </div>
+                <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                >    
+                {showPassword ? <FaEyeSlash/> : <FaEye/>} 
+                </button>
                 {errorMessage && <p className="error">{errorMessage}</p>}
                 <button type="submit">Cadastrar</button>
             </form>
