@@ -56,6 +56,10 @@ function Home() {
     <div>
       <h1>Bem-vindo(a), User</h1>
 
+      <div>
+        <button>Add credential</button>
+      </div>
+
       <div className="credentials-container">
         {credentials.map((cred) => (
           <div key={cred.id_password} className="credential-card">
