@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,8 @@ import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
 import com.example.secure_password_vault.security.TokenService;
 import com.example.secure_password_vault.services.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -40,7 +44,17 @@ public class AuthController {
 	TokenService tokenService;
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestBody CreateUserDto createUserDto) {
+	public ResponseEntity<String> register(@Valid @RequestBody CreateUserDto createUserDto, BindingResult bindingResult) {
+		
+		// Verificar se há erros de validação
+		if (bindingResult.hasErrors()) {
+			StringBuilder errorMessages = new StringBuilder();
+			for (FieldError error : bindingResult.getFieldErrors()) {
+				errorMessages.append(error.getField()).append(": ").append(error.getDefaultMessage()).append("\n");
+			}
+			return ResponseEntity.badRequest().body(errorMessages.toString());
+		}
+		
 		if(userRepository.findByEmail(createUserDto.email()) != null) {
 			return ResponseEntity.badRequest().body("Email já cadastrado");
 		}
@@ -52,7 +66,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDto> login(@RequestBody LoginUserDto loginUserDto) {
+	public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginUserDto loginUserDto) {
 	    var user = userRepository.findByEmail(loginUserDto.email());
 
 	    if (user == null) {

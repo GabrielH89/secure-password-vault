@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -31,7 +32,7 @@ public class User implements UserDetails {
 	private String username;
 	
 	@Column(nullable = false)
-	@NotBlank(message = "Email cannot be empty")
+	@NotNull(message = "Email cannot be empty")
 	@Size(max = 600, message = "Email cannot be longer than 600 characters")
 	@Pattern(
 			regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
@@ -40,7 +41,7 @@ public class User implements UserDetails {
 	private String email;
 	
 	@Column(nullable = false)
-	@NotBlank(message = "System name cannot be empty")
+	@NotNull(message = "Password cannot be empty")
 	@Size(max = 300, message = "Password cannot be longer than 300 characters")
 	@Pattern(
 			regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$",
