@@ -4,6 +4,7 @@ import '../../styles/credentials/Home.css';
 import AddCredential from "./AddCredential";
 import Modal from "../users/Modal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import EditCredential from "./EditCredential";
 
 interface Credential {
   id_password: number;
@@ -17,8 +18,15 @@ interface Credential {
 function Home() {
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [isAddCredentialOpen, setIsAddCredentialOpen] = useState(false);
+  const [isEditCredentialOpen, setIsEditCredentialOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [credentialToDelete, setCredentialToDelete] = useState<number | null>(null);
+  const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
+
+  const handleEdit = (credential: Credential) => {
+    setCredentialToEdit(credential);
+    setIsEditCredentialOpen(true);
+  };
 
   useEffect(() => {
     const fetchCredentials = async () => {
@@ -29,10 +37,10 @@ function Home() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCredentials(response.data); // Atualiza o estado com os dados da API
-        console.log(response.data)
+        setCredentials(response.data);
+        console.log(response.data);
       } catch (error) {
-        console.log("Error " + error);
+        console.log("Erro ao buscar credenciais: " + error);
       }
     };
     fetchCredentials();
@@ -43,7 +51,6 @@ function Home() {
     setIsDeleteModalOpen(true);
   };
 
-
   const handleDelete = async () => {
     if (!credentialToDelete) return;
     try {
@@ -51,16 +58,11 @@ function Home() {
       await axios.delete(`http://localhost:8080/credentials/${credentialToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCredentials(credentials.filter(cred => cred.id_password !== credentialToDelete)); // Remove do estado
+      setCredentials(credentials.filter(cred => cred.id_password !== credentialToDelete));
       setIsDeleteModalOpen(false);
     } catch (error) {
       console.error("Erro ao deletar credencial:", error);
     }
-  };
-
-  const handleUpdate = async (userId: number) => {
-    // Lógica para abrir um modal ou tela de edição
-    console.log(`Atualizar credencial com ID: ${userId}`);
   };
 
   return (
@@ -82,20 +84,24 @@ function Home() {
             <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()}</p>
             <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()}</p>
             <div className="card-actions">
-              <button onClick={() => handleUpdate(cred.id_password)} className="edit-button">Editar
-              </button>
-              <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar
-              </button>
+              <button className="edit-button" onClick={() => handleEdit(cred)}>Editar</button>
+              <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar</button>
             </div>
           </div>
         ))}
       </div>
+
+      {isEditCredentialOpen && credentialToEdit && (
+        <Modal key={credentialToEdit.id_password} isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
+          <EditCredential credential={credentialToEdit} onClose={() => setIsEditCredentialOpen(false)} />
+        </Modal>
+      )}
+
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={()  => setIsDeleteModalOpen(false)}
+        onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
-      >
-      </ConfirmDeleteModal>
+      />
     </div>
   );
 }
