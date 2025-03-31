@@ -38,7 +38,6 @@ function Home() {
           },
         });
         setCredentials(response.data);
-        console.log(response.data);
       } catch (error) {
         console.log("Erro ao buscar credenciais: " + error);
       }
@@ -68,7 +67,6 @@ function Home() {
   return (
     <div>
       <h1>Bem-vindo(a), User</h1>
-
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
@@ -92,8 +90,8 @@ function Home() {
       </div>
 
       {isEditCredentialOpen && credentialToEdit && (
-        <Modal key={credentialToEdit.id_password} isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
-          <EditCredential credential={credentialToEdit} onClose={() => setIsEditCredentialOpen(false)} />
+        <Modal isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
+          <EditCredential credential={credentialToEdit} onClose={() => setIsEditCredentialOpen(false)} setCredentials={setCredentials} />
         </Modal>
       )}
 

@@ -39,6 +39,9 @@ function AddCredential({ onClose }: { onClose: () => void }) {
 
     return (
         <div>
+             <button type="button" onClick={onClose} className="close-button">
+                X
+            </button>
             <form className="addCredentialForm" onSubmit={addCredential}>
                 <div className="formGroup">
                     <label>Nome do sistema:</label>
