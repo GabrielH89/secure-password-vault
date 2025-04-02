@@ -2,6 +2,7 @@ import { useState } from "react";
 import LoadingModal from "./LoadingModal"; // Modal de carregamento
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import '../../styles/credentials/EditCredential.css';
 
 interface Credential {
   id_password: number;
@@ -78,7 +79,10 @@ function EditCredential({ credential, onClose, setCredentials }: { credential: C
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
-        <button type="submit">Editar</button>
+        <div className="div-edit-btn">
+        <button className="edit-btn" type="submit">Editar</button>
+        </div>
+        
       </form>
     </div>
   );

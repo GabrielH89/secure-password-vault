@@ -71,7 +71,9 @@ function AddCredential({ onClose }: { onClose: () => void }) {
                 {showPassword ? <FaEyeSlash/> : <FaEye/>} 
                 </button>
                 {errorMessage && <p className="error">{errorMessage}</p>}
-                <button type="submit">Cadastrar</button>
+                <div className="div-add-btn">
+                    <button className="add-btn" type="submit">Cadastrar</button>
+                </div>
             </form>
         </div>
     );
