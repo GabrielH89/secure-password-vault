@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
 import com.example.secure_password_vault.dtos.credential.ShowCredentialDto;
 import com.example.secure_password_vault.dtos.credential.UpdateCredentialDto;
-import com.example.secure_password_vault.entities.Credential;
 import com.example.secure_password_vault.services.CredentialService;
 
 import jakarta.servlet.http.HttpServletRequest;

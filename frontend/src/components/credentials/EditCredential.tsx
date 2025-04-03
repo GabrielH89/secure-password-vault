@@ -13,11 +13,12 @@ interface Credential {
   user_id: number;
 }
 
-function EditCredential({ credential, onClose, setCredentials }: { credential: Credential; onClose: () => void; setCredentials: React.Dispatch<React.SetStateAction<Credential[]>> }) {
+function EditCredential({ credential, onClose, setCredentials }: { credential: Credential; onClose: () => void; 
+  setCredentials: React.Dispatch<React.SetStateAction<Credential[]>> }) {
   const [systemName, setSystemName] = useState(credential.systemName);
   const [passwordBody, setPasswordBody] = useState(credential.passwordBody);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Estado de carregamento
+  const [isLoading, setIsLoading] = useState(false); 
 
   const editCredential = async (e: React.FormEvent) => {
     e.preventDefault();

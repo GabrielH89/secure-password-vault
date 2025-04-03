@@ -70,8 +70,13 @@ function Home() {
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
-          <AddCredential onClose={() => setIsAddCredentialOpen(false)} />
-        </Modal>
+  {}
+  <AddCredential 
+    onClose={() => setIsAddCredentialOpen(false)} 
+    setCredentials={setCredentials} 
+  />
+</Modal>
+
       </div>
 
       <div className="credentials-container">
