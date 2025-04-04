@@ -10,6 +10,7 @@ function SignUp() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+    const API_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         if (errorMessage) {
@@ -44,7 +45,7 @@ function SignUp() {
         try {
             const userData = { username, email, password };
 
-            await axios.post("http://localhost:8080/auth/register", userData, {
+            await axios.post(`${API_URL}/auth/register`, userData, {
                 headers: {
                     "Content-Type": "application/json",
                 },

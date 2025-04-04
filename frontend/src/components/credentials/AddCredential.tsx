@@ -24,6 +24,7 @@ function AddCredential({ onClose, setCredentials }: AddCredentialProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const addCredential = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +43,7 @@ function AddCredential({ onClose, setCredentials }: AddCredentialProps) {
         throw new Error("Usuário não autenticado.");
       }
 
-      const response = await axios.post("http://localhost:8080/credentials", userData, {
+      const response = await axios.post(`${API_URL}/credentials`, userData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

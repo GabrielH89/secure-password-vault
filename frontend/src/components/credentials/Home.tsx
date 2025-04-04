@@ -24,6 +24,7 @@ function Home() {
   const [credentialToDelete, setCredentialToDelete] = useState<number | null>(null);
   const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
   const {userName} = useUserData();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleEdit = (credential: Credential) => {
     setCredentialToEdit(credential);
@@ -34,7 +35,7 @@ function Home() {
     const fetchCredentials = async () => {
       try {
         const token = sessionStorage.getItem("token");
-        const response = await axios.get("http://localhost:8080/credentials", {
+        const response = await axios.get(`${API_URL}/credentials`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,7 +57,7 @@ function Home() {
     if (!credentialToDelete) return;
     try {
       const token = sessionStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/credentials/${credentialToDelete}`, {
+      await axios.delete(`${API_URL}/credentials/${credentialToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCredentials(credentials.filter(cred => cred.id_password !== credentialToDelete));

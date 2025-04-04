@@ -19,6 +19,7 @@ function EditCredential({ credential, onClose, setCredentials }: { credential: C
   const [passwordBody, setPasswordBody] = useState(credential.passwordBody);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false); 
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const editCredential = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ function EditCredential({ credential, onClose, setCredentials }: { credential: C
     try {
       const userData = { systemName, passwordBody };
       const token = sessionStorage.getItem("token");
-      await axios.put(`http://localhost:8080/credentials/${credential.id_password}`, userData, {
+      await axios.put(`${API_URL}/credentials/${credential.id_password}`, userData, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,

@@ -11,6 +11,7 @@ function SignIn() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isSignUpOpen, setSignUpOpen] = useState(false);
     const navigate = useNavigate();
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,7 +22,7 @@ function SignIn() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/auth/login", { email, password });
+            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
 
             const { token, userId } = response.data;
             sessionStorage.setItem("token", token);
