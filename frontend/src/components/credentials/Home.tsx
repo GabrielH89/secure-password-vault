@@ -5,6 +5,7 @@ import AddCredential from "./AddCredential";
 import Modal from "../users/Modal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCredential from "./EditCredential";
+import { useUserData } from "../../utils/useUserData";
 
 interface Credential {
   id_password: number;
@@ -22,6 +23,7 @@ function Home() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [credentialToDelete, setCredentialToDelete] = useState<number | null>(null);
   const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
+  const {userName} = useUserData();
 
   const handleEdit = (credential: Credential) => {
     setCredentialToEdit(credential);
@@ -66,7 +68,7 @@ function Home() {
 
   return (
     <div>
-      <h1>Bem-vindo(a), User</h1>
+      <h1>Bem-vindo(a), {userName}</h1>
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>

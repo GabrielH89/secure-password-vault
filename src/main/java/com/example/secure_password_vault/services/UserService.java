@@ -6,7 +6,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.secure_password_vault.dtos.user.ShowUserDto;
+import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -18,5 +22,20 @@ public class UserService implements UserDetailsService {
 		return userRepository.findByEmail(username);
 	}
 	
-	
+	public ShowUserDto getUserById(HttpServletRequest request) {
+	    Long userId = (Long) request.getAttribute("userId");
+
+	    if (userId == null) {
+	        throw new IllegalArgumentException("User not found");
+	    }
+
+	    User user = userRepository.findById(userId)
+	            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+	    return new ShowUserDto(
+	        user.getUsername(),
+	        user.getEmail()
+	    );
+	}
+
 }
