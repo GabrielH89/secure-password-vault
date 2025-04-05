@@ -77,6 +77,29 @@ p {
     font-size: 1rem;
 }
 
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-input-container input {
+    width: 100%;
+    padding-right: 40px;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: -10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    font-size: 1rem;
+    height: 30px;
+  }
+  
+
 /* Responsividade */
 @media (max-width: 500px) {
     .signUpForm {
