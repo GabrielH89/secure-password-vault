@@ -14,6 +14,7 @@ function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
+  
 
   useEffect(() => {
     if (errorMessage) {
