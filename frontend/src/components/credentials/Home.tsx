@@ -87,8 +87,8 @@ function Home() {
           <div key={cred.id_password} className="credential-card">
             <h3>{cred.systemName}</h3>
             <p><strong>Senha:</strong> {cred.passwordBody}</p>
-            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()}</p>
-            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()}</p>
+            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} às {new Date(cred.createAt).toLocaleTimeString()}</p>
+            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} às {new Date(cred.updateAt).toLocaleTimeString()}</p>
             <div className="card-actions">
               <button className="edit-button" onClick={() => handleEdit(cred)}>Editar</button>
               <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar</button>
