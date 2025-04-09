@@ -6,6 +6,8 @@ import Modal from "../users/Modal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCredential from "./EditCredential";
 import { useUserData } from "../../utils/useUserData";
+import { Link } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 
 interface Credential {
   id_password: number;
@@ -69,16 +71,27 @@ function Home() {
 
   return (
     <div>
+      <div className="menu-profile">
+        <h2>System credential</h2>
+        <Link to="/personal-profile">
+          <span>
+           
+              <FaUserCircle></FaUserCircle>
+            
+          </span>
+        </Link>
+      </div>
+
       <h1>Bem-vindo(a), {userName}</h1>
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
-  {}
-  <AddCredential 
-    onClose={() => setIsAddCredentialOpen(false)} 
-    setCredentials={setCredentials} 
-  />
-</Modal>
+        {}
+        <AddCredential 
+          onClose={() => setIsAddCredentialOpen(false)} 
+          setCredentials={setCredentials} 
+        />
+      </Modal>
 
       </div>
 
