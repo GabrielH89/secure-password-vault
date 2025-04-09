@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import '../../styles/credentials/Home.css';
 import AddCredential from "./AddCredential";
 import Modal from "../users/Modal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCredential from "./EditCredential";
+import DeleteAllCredentials from "./DeleteAllCredentials";
 import { useUserData } from "../../utils/useUserData";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
@@ -25,7 +26,11 @@ function Home() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [credentialToDelete, setCredentialToDelete] = useState<number | null>(null);
   const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
-  const {userName} = useUserData();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const { userName } = useUserData();
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleEdit = (credential: Credential) => {
@@ -69,30 +74,53 @@ function Home() {
     }
   };
 
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(prev => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div>
       <div className="menu-profile">
         <h2>System credential</h2>
-        <Link to="/personal-profile">
-          <span>
-           
-              <FaUserCircle></FaUserCircle>
-            
-          </span>
-        </Link>
+        <div className="profile-icon" onClick={toggleProfileMenu} ref={profileMenuRef}>
+          <FaUserCircle size={48} />
+          {isProfileMenuOpen && (
+            <div className="profile-dropdown">
+              <ul>
+                <li>
+                  <Link to="/personal-profile" className="dropdown-button">Informações pessoais</Link>
+                </li>
+                <li>
+                  <button onClick={() => setIsDeleteAllModalOpen(true)}>Deletar todas as credentials</button>
+                </li>
+                <li>
+                  <button>Sair</button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       <h1>Bem-vindo(a), {userName}</h1>
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
-        {}
-        <AddCredential 
-          onClose={() => setIsAddCredentialOpen(false)} 
-          setCredentials={setCredentials} 
-        />
-      </Modal>
-
+          <AddCredential 
+            onClose={() => setIsAddCredentialOpen(false)} 
+            setCredentials={setCredentials} 
+          />
+        </Modal>
       </div>
 
       <div className="credentials-container">
@@ -100,8 +128,10 @@ function Home() {
           <div key={cred.id_password} className="credential-card">
             <h3>{cred.systemName}</h3>
             <p><strong>Senha:</strong> {cred.passwordBody}</p>
-            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} às {new Date(cred.createAt).toLocaleTimeString()}</p>
-            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} às {new Date(cred.updateAt).toLocaleTimeString()}</p>
+            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} 
+              às {new Date(cred.createAt).toLocaleTimeString()}</p>
+            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} 
+              às {new Date(cred.updateAt).toLocaleTimeString()}</p>
             <div className="card-actions">
               <button className="edit-button" onClick={() => handleEdit(cred)}>Editar</button>
               <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar</button>
@@ -112,7 +142,11 @@ function Home() {
 
       {isEditCredentialOpen && credentialToEdit && (
         <Modal isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
-          <EditCredential credential={credentialToEdit} onClose={() => setIsEditCredentialOpen(false)} setCredentials={setCredentials} />
+          <EditCredential 
+            credential={credentialToEdit} 
+            onClose={() => setIsEditCredentialOpen(false)} 
+            setCredentials={setCredentials} 
+          />
         </Modal>
       )}
 
@@ -120,6 +154,12 @@ function Home() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
+      />
+
+      <DeleteAllCredentials
+        isOpen={isDeleteAllModalOpen}
+        onClose={() => setIsDeleteAllModalOpen(false)}
+        onDeleted={() => setCredentials([])}
       />
     </div>
   );
