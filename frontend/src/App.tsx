@@ -15,7 +15,7 @@ function App() {
         <Route path='/' element={<SignIn/>}></Route> 
         <Route path='/home' element={<PrivateRoute element={<Home />} />} />
         <Route path='/home/:id' element={<PrivateRoute element={<EditCredential onClose={() => {}} />} />} />
-        <Route path='/personal-profile' element={<PersonalProfile/>}></Route>  
+        <Route path='/personal-profile' element={<PrivateRoute element={<PersonalProfile/>} />}/>  
       </Routes> 
       </BrowserRouter>   
     </>

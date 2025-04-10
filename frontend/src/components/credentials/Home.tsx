@@ -7,7 +7,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCredential from "./EditCredential";
 import DeleteAllCredentials from "./DeleteAllCredentials";
 import { useUserData } from "../../utils/useUserData";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 
 interface Credential {
@@ -28,6 +28,7 @@ function Home() {
   const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const { userName } = useUserData();
@@ -88,6 +89,11 @@ function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const logout = () => {
+    sessionStorage.removeItem("token");
+    navigate("/");
+  }
+
   return (
     <div>
       <div className="menu-profile">
@@ -104,7 +110,7 @@ function Home() {
                   <button onClick={() => setIsDeleteAllModalOpen(true)}>Deletar todas as credentials</button>
                 </li>
                 <li>
-                  <button>Sair</button>
+                  <button onClick={logout}>Sair</button>
                 </li>
               </ul>
             </div>
