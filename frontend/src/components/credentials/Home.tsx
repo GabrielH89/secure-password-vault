@@ -28,6 +28,7 @@ function Home() {
   const [credentialToEdit, setCredentialToEdit] = useState<Credential | null>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,35 @@ function Home() {
   const logout = () => {
     sessionStorage.removeItem("token");
     navigate("/");
-  }
+  };
+
+  // Funções de drag-and-drop
+  const handleDragStart = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    setDraggedIndex(index);
+    e.currentTarget.classList.add("dragging");
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const updatedCredentials = [...credentials];
+    const [draggedItem] = updatedCredentials.splice(draggedIndex, 1);
+    updatedCredentials.splice(index, 0, draggedItem);
+
+    setCredentials(updatedCredentials);
+    setDraggedIndex(null);
+
+    e.currentTarget.classList.remove("dragging");
+  };
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    setDraggedIndex(null);
+    e.currentTarget.classList.remove("dragging");
+  };
 
   return (
     <div>
@@ -122,22 +151,28 @@ function Home() {
       <div className="addCredentialOpen">
         <button onClick={() => setIsAddCredentialOpen(true)}>Inserir credencial</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
-          <AddCredential 
-            onClose={() => setIsAddCredentialOpen(false)} 
-            setCredentials={setCredentials} 
+          <AddCredential
+            onClose={() => setIsAddCredentialOpen(false)}
+            setCredentials={setCredentials}
           />
         </Modal>
       </div>
 
       <div className="credentials-container">
-        {credentials.map((cred) => (
-          <div key={cred.id_password} className="credential-card">
+        {credentials.map((cred, index) => (
+          <div
+            key={cred.id_password}
+            className="credential-card"
+            draggable
+            onDragStart={(e) => handleDragStart(index, e)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(index, e)}
+            onDragEnd={handleDragEnd}
+          >
             <h3 className="card-content-scroll">{cred.systemName}</h3>
             <p className="card-content-scroll"><strong>Senha:</strong> {cred.passwordBody}</p>
-            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} 
-              às {new Date(cred.createAt).toLocaleTimeString()}</p>
-            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} 
-              às {new Date(cred.updateAt).toLocaleTimeString()}</p>
+            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} às {new Date(cred.createAt).toLocaleTimeString()}</p>
+            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} às {new Date(cred.updateAt).toLocaleTimeString()}</p>
             <div className="card-actions">
               <button className="edit-button" onClick={() => handleEdit(cred)}>Editar</button>
               <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar</button>
@@ -148,10 +183,10 @@ function Home() {
 
       {isEditCredentialOpen && credentialToEdit && (
         <Modal isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
-          <EditCredential 
-            credential={credentialToEdit} 
-            onClose={() => setIsEditCredentialOpen(false)} 
-            setCredentials={setCredentials} 
+          <EditCredential
+            credential={credentialToEdit}
+            onClose={() => setIsEditCredentialOpen(false)}
+            setCredentials={setCredentials}
           />
         </Modal>
       )}
