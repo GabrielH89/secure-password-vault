@@ -120,7 +120,7 @@ function Home() {
 
       <h1>Bem-vindo(a), {userName}</h1>
       <div className="addCredentialOpen">
-        <button onClick={() => setIsAddCredentialOpen(true)}>Inserir senha</button>
+        <button onClick={() => setIsAddCredentialOpen(true)}>Inserir credencial</button>
         <Modal isOpen={isAddCredentialOpen} onClose={() => setIsAddCredentialOpen(false)}>
           <AddCredential 
             onClose={() => setIsAddCredentialOpen(false)} 
@@ -132,8 +132,8 @@ function Home() {
       <div className="credentials-container">
         {credentials.map((cred) => (
           <div key={cred.id_password} className="credential-card">
-            <h3>{cred.systemName}</h3>
-            <p><strong>Senha:</strong> {cred.passwordBody}</p>
+            <h3 className="card-content-scroll">{cred.systemName}</h3>
+            <p className="card-content-scroll"><strong>Senha:</strong> {cred.passwordBody}</p>
             <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} 
               às {new Date(cred.createAt).toLocaleTimeString()}</p>
             <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} 
