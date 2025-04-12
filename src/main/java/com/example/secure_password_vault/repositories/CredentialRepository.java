@@ -10,4 +10,6 @@ import com.example.secure_password_vault.entities.Credential;
 @Repository
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
 	List<Credential> findByUserId(long userId);
+	
+	List<Credential> findByUserIdOrderByPosition(Long userId);
 }

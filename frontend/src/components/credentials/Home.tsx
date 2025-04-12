@@ -95,27 +95,40 @@ function Home() {
     navigate("/");
   };
 
-  // Funções de drag-and-drop
+  // 🔄 Drag-and-drop handlers com envio ao backend
   const handleDragStart = (index: number, e: React.DragEvent<HTMLDivElement>) => {
     setDraggedIndex(index);
     e.currentTarget.classList.add("dragging");
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
+    event.preventDefault(); // Permite o drop
   };
 
-  const handleDrop = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (index: number, e: React.DragEvent<HTMLDivElement>) => {
     if (draggedIndex === null || draggedIndex === index) return;
 
     const updatedCredentials = [...credentials];
     const [draggedItem] = updatedCredentials.splice(draggedIndex, 1);
     updatedCredentials.splice(index, 0, draggedItem);
 
-    setCredentials(updatedCredentials);
+    setCredentials(updatedCredentials); // Atualiza localmente
     setDraggedIndex(null);
-
     e.currentTarget.classList.remove("dragging");
+
+    // 🆕 Envia a nova ordem ao backend
+    try {
+      const token = sessionStorage.getItem("token");
+      const orderedIds = updatedCredentials.map((cred) => cred.id_password);
+      await axios.put(`${API_URL}/credentials/reorder`, orderedIds, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao reordenar credenciais:", error);
+    }
   };
 
   const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {

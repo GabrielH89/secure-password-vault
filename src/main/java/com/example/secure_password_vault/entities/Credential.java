@@ -42,11 +42,22 @@ public class Credential {
 	
 	@Column(nullable = false)
 	private LocalDateTime updatedAt;
+	
+	@Column(name = "position")
+	private Integer position;
 
 	public Credential() {
 		
 	}	
 	
+	public Integer getPosition() {
+		return position;
+	}
+
+	public void setPosition(Integer position) {
+		this.position = position;
+	}
+
 	public Credential(String systemName, String passwordBody) {
 		this.systemName = systemName;
 		this.passwordBody = passwordBody;

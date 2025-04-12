@@ -1,5 +1,6 @@
 package com.example.secure_password_vault.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class CredentialService {
 	public List<ShowCredentialDto> getAllCredentials(HttpServletRequest request) {
 		long userId = (Long) request.getAttribute("userId");
 	        
-		List<Credential> credentials = credentialRepository.findByUserId(userId);
+		List<Credential> credentials = credentialRepository.findByUserIdOrderByPosition(userId);
 		
 		if(credentials.isEmpty()) {
 			throw new EmptyListException("Credentials not found");
@@ -136,4 +137,25 @@ public class CredentialService {
 
 	    credentialRepository.deleteById(id);
 	}
+	
+	public List<Credential> reorderCredential(List<Long> orderedIds, HttpServletRequest request) {
+	    long userId = (Long) request.getAttribute("userId");
+	    List<Credential> credentialsToSave = new ArrayList<>();
+
+	    for (int i = 0; i < orderedIds.size(); i++) {
+	        Long credentialId = orderedIds.get(i);
+	        Credential credential = credentialRepository.findById(credentialId)
+	                .orElseThrow(() -> new NoSuchElementException("Credential with id " + credentialId + " not found"));
+
+	        if (credential.getUser().getId() != userId) {
+	            throw new SecurityException("You do not have permission to reorder this credential");
+	        }
+
+	        credential.setPosition(i);
+	        credentialsToSave.add(credential);
+	    }
+
+	    return credentialRepository.saveAll(credentialsToSave); // agora retorna a lista
+	}
+
 }

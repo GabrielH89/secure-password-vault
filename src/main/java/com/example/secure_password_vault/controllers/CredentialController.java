@@ -63,6 +63,12 @@ public class CredentialController {
 		credentialService.deleteCredentialById(request, id);
 		return ResponseEntity.noContent().build();
 	}
+	
+	@PutMapping("/reorder")
+	public ResponseEntity<?> reorderCredential(@RequestBody List<Long> orderedIds, HttpServletRequest request) {
+		credentialService.reorderCredential(orderedIds, request);
+		return ResponseEntity.status(200).body("Credential reordered successfully");
+	}
 }
 
 
