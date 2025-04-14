@@ -12,11 +12,35 @@ function SignIn() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isSignUpOpen, setSignUpOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // estado do loading
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL;
 
+    const startCountdown = (seconds : number) => {
+        setIsBlocked(true);
+        setCountdown(seconds);
+
+        const interval = setInterval(() => {
+            setCountdown((prev) => {
+                if(prev <= 1) {
+                    clearInterval(interval)
+                    setIsBlocked(false);
+                    return 0;
+                }
+                return prev -1;
+            });
+        }, 1000)
+    }
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if(isBlocked) {
+            setErrorMessage(`Aguarde ${countdown} segundos antes de tentar novamente`);
+        }
+
         setIsLoading(true); // ativa o loading
         setErrorMessage("");
 
@@ -28,7 +52,6 @@ function SignIn() {
 
         try {
             const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-
             const { token, userId } = response.data;
             sessionStorage.setItem("token", token);
             sessionStorage.setItem("userId", userId);
@@ -38,6 +61,7 @@ function SignIn() {
             if (axiosError.response?.status === 401 || axiosError.response?.status === 404) {
                 setErrorMessage("Email ou senha inválidos.");
                 setIsLoading(false);
+                startCountdown(3);
             } 
             setTimeout(() => setErrorMessage(""), 3000);
         } finally {
@@ -51,6 +75,11 @@ function SignIn() {
             
             <form className="signInForm" onSubmit={handleLogin}>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
+                {isBlocked && (
+                    <div className="countdown-message">
+                        Tente novamente em {countdown} segundo{countdown > 1 ? "s" : ""}.
+                    </div>
+                )}
                 <h2>Login</h2>
                 <div className="formGroup">
                     <label>Email:</label>
@@ -70,7 +99,9 @@ function SignIn() {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit" disabled={isBlocked}>
+                    login
+                </button>
                 <p>
                     Não possui uma conta?{" "}
                     <Link to="#" onClick={() => setSignUpOpen(true)}>Cadastre-se</Link>

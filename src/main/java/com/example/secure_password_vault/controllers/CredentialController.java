@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
 import com.example.secure_password_vault.dtos.credential.ShowCredentialDto;
 import com.example.secure_password_vault.dtos.credential.UpdateCredentialDto;
+import com.example.secure_password_vault.entities.Credential;
 import com.example.secure_password_vault.services.CredentialService;
+import com.example.secure_password_vault.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -65,9 +67,10 @@ public class CredentialController {
 	}
 	
 	@PutMapping("/reorder")
-	public ResponseEntity<?> reorderCredential(@RequestBody List<Long> orderedIds, HttpServletRequest request) {
+	public ResponseEntity<List<Credential>> reorderCredential(@RequestBody List<Long> orderedIds, HttpServletRequest request) {
 		credentialService.reorderCredential(orderedIds, request);
-		return ResponseEntity.status(200).body("Credential reordered successfully");
+		List<Credential> orderedCredentials = credentialService.reorderCredential(orderedIds, request);
+		return ResponseEntity.ok(orderedCredentials);
 	}
 }
 
