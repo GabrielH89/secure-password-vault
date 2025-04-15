@@ -1,5 +1,7 @@
 package com.example.secure_password_vault.dtos.user;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -21,6 +23,9 @@ public record CreateUserDto(
     			regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])\\S{6,}$",
     	        message = "Password must contain at least one letter, one number, and one special character and not empty spaces"
     	        )
-        String password) {
+        String password, 
+        
+        MultipartFile imageUser
+		) {
 
 }

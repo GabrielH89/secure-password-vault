@@ -49,6 +49,9 @@ public class User implements UserDetails {
 	        )
 	private String password;
 	
+	@Column(name = "imageUser")
+	private String imageUser;
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Credential> credentials;
 	
@@ -60,6 +63,13 @@ public class User implements UserDetails {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+	}
+	
+	public User(String username, String email, String password, String imageUser) {
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.imageUser = imageUser;
 	}
 
 	public long getId() {
@@ -92,6 +102,14 @@ public class User implements UserDetails {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getImageUser() {
+		return imageUser;
+	}
+
+	public void setImageUser(String imageUser) {
+		this.imageUser = imageUser;
 	}
 
 	public List<Credential> getCredentials() {

@@ -1,5 +1,7 @@
 package com.example.secure_password_vault.controllers;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,7 @@ import com.example.secure_password_vault.dtos.user.LoginUserDto;
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
 import com.example.secure_password_vault.security.TokenService;
+import com.example.secure_password_vault.services.ImageStorageService;
 import com.example.secure_password_vault.services.UserService;
 
 import jakarta.validation.Valid;
@@ -43,8 +47,11 @@ public class AuthController {
 	@Autowired
 	TokenService tokenService;
 	
+	@Autowired
+	ImageStorageService imageStorageService;
+	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@Valid @RequestBody CreateUserDto createUserDto, BindingResult bindingResult) {
+	public ResponseEntity<String> register(@Valid @ModelAttribute @RequestBody CreateUserDto createUserDto, BindingResult bindingResult) {
 		
 		// Verificar se há erros de validação
 		if (bindingResult.hasErrors()) {
@@ -60,7 +67,15 @@ public class AuthController {
 		}
 		
 		String encryptedPassword = passwordEncoder.encode(createUserDto.password());
-		User newUser = new User(createUserDto.username(), createUserDto.email(), encryptedPassword);
+		String imagePath = null;
+		
+		try {
+			imagePath = imageStorageService.saveImage(createUserDto.imageUser());
+		}catch(IOException error) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro to save image" + error);
+		}
+		
+		User newUser = new User(createUserDto.username(), createUserDto.email(), encryptedPassword, imagePath);
 		userRepository.save(newUser);
 		return ResponseEntity.status(HttpStatus.CREATED).body("User created with success");
 	}
