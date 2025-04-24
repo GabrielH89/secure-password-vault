@@ -38,5 +38,6 @@ public class UserService implements UserDetailsService {
 	        user.getImageUser()
 	    );
 	}
+	
 
 }
