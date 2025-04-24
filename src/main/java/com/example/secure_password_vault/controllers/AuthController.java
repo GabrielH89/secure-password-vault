@@ -51,7 +51,7 @@ public class AuthController {
 	ImageStorageService imageStorageService;
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@Valid @ModelAttribute @RequestBody CreateUserDto createUserDto, BindingResult bindingResult) {
+	public ResponseEntity<String> register(@Valid @ModelAttribute CreateUserDto createUserDto, BindingResult bindingResult) {
 		
 		// Verificar se há erros de validação
 		if (bindingResult.hasErrors()) {

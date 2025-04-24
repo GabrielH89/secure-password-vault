@@ -32,7 +32,7 @@ function Home() {
   const navigate = useNavigate();
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
-  const { userName } = useUserData();
+  const { userName, imageUser } = useUserData();
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleEdit = (credential: Credential) => {
@@ -40,6 +40,8 @@ function Home() {
     setIsEditCredentialOpen(true);
   };
 
+  console.log(userName)
+  console.log(imageUser)
   useEffect(() => {
     const fetchCredentials = async () => {
       try {
@@ -141,15 +143,24 @@ function Home() {
       <div className="menu-profile">
         <h2>System credential</h2>
         <div className="profile-icon" onClick={toggleProfileMenu} ref={profileMenuRef}>
-          <FaUserCircle size={48} />
+        {imageUser ? (
+    <img
+      src={`${API_URL}${imageUser}`}
+      alt="Imagem de perfil"
+      className="profile-picture"
+      style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }}
+    />
+  ) : (
+    <FaUserCircle size={48} />
+  )}
           {isProfileMenuOpen && (
-            <div className="profile-dropdown">
+            <div className="profile-dropdown">{imageUser}
               <ul>
                 <li>
                   <Link to="/personal-profile" className="dropdown-button">Informações pessoais</Link>
                 </li>
                 <li>
-                  <button onClick={() => setIsDeleteAllModalOpen(true)}>Deletar todas as credentials</button>
+                  <button onClick={() => setIsDeleteAllModalOpen(true)}>Deletar todas as credenciais</button>
                 </li>
                 <li>
                   <button onClick={logout}>Sair</button>
@@ -184,8 +195,10 @@ function Home() {
           >
             <h3 className="card-content-scroll">{cred.systemName}</h3>
             <p className="card-content-scroll"><strong>Senha:</strong> {cred.passwordBody}</p>
-            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} às {new Date(cred.createAt).toLocaleTimeString()}</p>
-            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} às {new Date(cred.updateAt).toLocaleTimeString()}</p>
+            <p><strong>Criado em:</strong> {new Date(cred.createAt).toLocaleDateString()} às 
+            {new Date(cred.createAt).toLocaleTimeString()}</p>
+            <p><strong>Atualizado em:</strong> {new Date(cred.updateAt).toLocaleDateString()} às 
+            {new Date(cred.updateAt).toLocaleTimeString()}</p>
             <div className="card-actions">
               <button className="edit-button" onClick={() => handleEdit(cred)}>Editar</button>
               <button onClick={() => confirmDelete(cred.id_password)} className="delete-button">Deletar</button>

@@ -33,7 +33,7 @@ public class SecurityConfig {
 	        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 	        .csrf(csrf -> csrf.disable()) // Desabilita CSRF (necessário para H2 Console)
 	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/auth/register", "/auth/login", "/h2-console/**").permitAll()
+	            .requestMatchers("/auth/register", "/auth/login", "/h2-console/**", "/uploads/**").permitAll()
 	            .requestMatchers("/credentials/**").authenticated()
 	            .anyRequest().authenticated()
 	        )

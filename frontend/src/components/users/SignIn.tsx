@@ -51,7 +51,7 @@ function SignIn() {
         }
 
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+            const response = await axios.post(`${API_URL}/auth/login`, { email, password } )
             const { token, userId } = response.data;
             sessionStorage.setItem("token", token);
             sessionStorage.setItem("userId", userId);

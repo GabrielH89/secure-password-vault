@@ -16,7 +16,7 @@ public class ImageStorageService {
 	            String filename = UUID.randomUUID().toString() + extension;
 
 	            // Caminho para onde as imagens serão salvas
-	            String uploadDir = new File("src/main/resources/static/uploads").getAbsolutePath();
+	            String uploadDir = new File("uploads").getAbsolutePath();
 	            File dir = new File(uploadDir);
 	            if (!dir.exists()) {
 	                dir.mkdirs();

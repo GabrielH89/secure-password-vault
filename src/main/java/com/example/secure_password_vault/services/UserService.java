@@ -34,7 +34,8 @@ public class UserService implements UserDetailsService {
 
 	    return new ShowUserDto(
 	        user.getUsername(),
-	        user.getEmail()
+	        user.getEmail(),
+	        user.getImageUser()
 	    );
 	}
 
