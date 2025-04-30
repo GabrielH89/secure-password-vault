@@ -28,4 +28,15 @@ public class ImageStorageService {
 		 }
 		 return null;
 	}
+	
+	public void deleteImage(String imagePath) {
+		if(imagePath != null && !imagePath.isEmpty()) {
+			String filename = imagePath.replace("/uploads/", "");
+			File file = new File("uploads", filename);
+			
+			if(file.exists()) {
+				file.delete();
+			}
+		}
+	}
 }

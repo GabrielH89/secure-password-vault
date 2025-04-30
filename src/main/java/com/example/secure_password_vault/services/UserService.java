@@ -92,6 +92,11 @@ public class UserService implements UserDetailsService {
 		// Converte a imagem para Base64, se foi enviada
 	    if (updateDto.imageUser() != null && !updateDto.imageUser().isEmpty()) {
 	        try {
+	        	//Remove a imagem antiga, se existir
+	        	if(user.getImageUser() != null) {
+	        		imageStorageService.deleteImage(user.getImageUser());
+	        	}
+	        	
 	        	String imagePath = imageStorageService.saveImage(updateDto.imageUser());
 	        	user.setImageUser(imagePath);
 	        } catch (Exception e) {
