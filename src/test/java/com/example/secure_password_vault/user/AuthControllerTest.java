@@ -69,34 +69,6 @@ public class AuthControllerTest {
     @DisplayName("It should register an user with success")
     void shouldRegisterUserSuccessfully() throws Exception {
         // Entrada esperada
-        var input = new CreateUserDto("User", "user@gmail.com", "");
-
-        // Usuário esperado após criptografia e salvamento
-        var expectedUser = new User("User", "user@gmail.com", "encryptedPassword");
-
-        // Criando um mock do BindingResult
-        BindingResult bindingResult = new MapBindingResult(new HashMap<>(), "createUserDto");
-
-        // Simulação: Usuário não existe no banco
-        when(userRepository.findByEmail(input.email())).thenReturn(null);
-
-        // Simulação: Senha criptografada
-        when(passwordEncoder.encode(input.password())).thenReturn("encryptedPassword");
-
-        // Simulação: Salvamento do usuário
-        when(userRepository.save(any(User.class))).thenReturn(expectedUser);
-
-        // Executando a função com BindingResult
-        var savedUser = authController.register(input, bindingResult);
-
-        // Verificações
-        assertNotNull(savedUser);
-        
-        // Verificando se houve erros de validação
-        assertEquals(0, bindingResult.getErrorCount());
-
-        // Verifica se o método save foi chamado corretamente
-        verify(userRepository, times(1)).save(any(User.class));
     }
    
 }

@@ -14,6 +14,10 @@ function SignIn() {
     const [isLoading, setIsLoading] = useState(false); // estado do loading
     const [isBlocked, setIsBlocked] = useState(false);
     const [countdown, setCountdown] = useState(0);
+    const [attemptCount, setAttemptCount] = useState(0);
+
+    const MAX_ATTEMPTS = 15;
+    const BLOCK_DURATION = 60;
 
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL;
@@ -27,6 +31,7 @@ function SignIn() {
                 if(prev <= 1) {
                     clearInterval(interval)
                     setIsBlocked(false);
+                    setAttemptCount(0);
                     return 0;
                 }
                 return prev -1;
@@ -36,9 +41,9 @@ function SignIn() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        if(isBlocked) {
-            setErrorMessage(`Aguarde ${countdown} segundos antes de tentar novamente`);
+        if (isBlocked) {
+            setErrorMessage(`Aguarde ${countdown} segundo${countdown > 1 ? "s" : ""} antes de tentar novamente.`);
+            return;
         }
 
         setIsLoading(true); // ativa o loading
@@ -61,7 +66,14 @@ function SignIn() {
             if (axiosError.response?.status === 401 || axiosError.response?.status === 404) {
                 setErrorMessage("Email ou senha inválidos.");
                 setIsLoading(false);
-                startCountdown(3);
+                const newCount = attemptCount + 1;
+                setAttemptCount(newCount);
+
+                if(newCount >= MAX_ATTEMPTS) {
+                    startCountdown(BLOCK_DURATION);
+                }
+            }else{
+                setErrorMessage("Erro ao tentar login. Tente novamente mais tarde.");
             } 
             setTimeout(() => setErrorMessage(""), 3000);
         } finally {
@@ -77,6 +89,7 @@ function SignIn() {
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
                 {isBlocked && (
                     <div className="countdown-message">
+                        Você atingiu a quantiade limite de requisções por minuto. 
                         Tente novamente em {countdown} segundo{countdown > 1 ? "s" : ""}.
                     </div>
                 )}

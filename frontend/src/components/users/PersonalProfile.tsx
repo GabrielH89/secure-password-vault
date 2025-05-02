@@ -69,6 +69,9 @@ function PersonalProfile() {
             <label>Email</label>
             <input type='email' value={userEmail} disabled></input>
 
+            <label>Senha</label>
+            <input type='password' disabled></input>
+
             <button className="delete-account-btn">Deletar conta</button>
         </div>
     )

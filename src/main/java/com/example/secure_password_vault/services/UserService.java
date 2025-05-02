@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
 
 	    User user = userRepository.findById(userId)
 	            .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+	    
 	    return new ShowUserDto(
 	        user.getUsername(),
 	        user.getEmail(),
