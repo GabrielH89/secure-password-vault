@@ -2,7 +2,8 @@ create table tb_user (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     email VARCHAR(600) NOT NULL UNIQUE,
-    password VARCHAR(300) NOT NULL 
+    password VARCHAR(300) NOT NULL,
+    image_user varchar(255)  
 );
 
 CREATE TABLE tb_credential (
@@ -12,5 +13,6 @@ CREATE TABLE tb_credential (
     password_body VARCHAR(500) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    position int,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES tb_user(id) ON DELETE CASCADE
 );
