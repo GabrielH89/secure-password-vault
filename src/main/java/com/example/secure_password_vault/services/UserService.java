@@ -66,6 +66,15 @@ public class UserService implements UserDetailsService {
 		 User user = userRepository.findById(userId)
 			        .orElseThrow(() -> new IllegalArgumentException("User not found"));
 		 
+	        try {
+	            if (user.getImageUser() != null) {
+	                imageStorageService.deleteImage(user.getImageUser());
+	            }
+	           
+	        } catch (Exception e) {
+	            throw new RuntimeException("Erro ao processar a imagem", e);
+	        }
+		 
 		 user.setImageUser(null);
 		 userRepository.save(user);
 		 return new DeleteImageUserDto(null);

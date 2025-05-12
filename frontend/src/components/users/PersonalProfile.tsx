@@ -4,6 +4,7 @@ import { FaPen, FaUserCircle } from "react-icons/fa";
 import { useRef, useState } from "react";
 import UpdateDatas from "./UpdateDatas";
 import Modal from "./Modal";
+import axios from "axios";
 
 function PersonalProfile() {
     const {userName, userEmail, imageUser} = useUserData();
@@ -20,17 +21,56 @@ function PersonalProfile() {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            // TODO: Enviar o arquivo para o backend
-            console.log("Upload de imagem:", file);
-        }
-    };
+   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        const token = sessionStorage.getItem("token");
+        if (!token) return;
 
-    const handleRemoveImage = () => {
-        // TODO: Chamar API para remover imagem
-        console.log("Imagem removida");
+        const formData = new FormData();
+        formData.append("imageUser", file);
+        formData.append("username", userName); // ou userNameData se quiser permitir edição
+        formData.append("email", userEmail);   // idem
+
+        try {
+            const response = await axios.put(`${API_URL}/users`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            const { token: newToken } = response.data;
+            if (newToken) {
+                sessionStorage.setItem("token", newToken);
+            }
+
+            window.location.reload();
+        } catch (error) {
+            console.error("Error to update image:", error);
+        }
+    }
+};
+
+
+    const handleRemoveImage = async () => {
+        try {
+            const token = sessionStorage.getItem("token");
+            const response = await axios.delete(`${API_URL}/users/image`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const {token: newToken} = response.data;
+            if(newToken) {
+                sessionStorage.setItem("token", newToken);
+            }
+
+            window.location.reload();
+        }catch(error) {
+            console.error("Error to delete image " + error);    
+        }
     };
 
 
