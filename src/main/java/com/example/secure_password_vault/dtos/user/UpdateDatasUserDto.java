@@ -20,12 +20,7 @@ public record UpdateDatasUserDto(
 		 
 		 MultipartFile imageUser,
 		 
-		  @NotBlank(message = "Password cannot be empty")
-	        @Size(max = 300, message = "Password cannot be longer than 300 characters")
-	        @Pattern(
-	    			regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])\\S{6,}$",
-	    	        message = "Password must contain at least one letter, one number, and one special character and not empty spaces"
-	    	        )
+        @Size(max = 300, message = "Password cannot be longer than 300 characters")
 		 String password) {
 
 }

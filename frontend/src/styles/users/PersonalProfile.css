@@ -77,6 +77,22 @@
     font-weight: bold;
 }
 
+.div-personal-profile-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.personal-profile .update-account-btn {
+    background-color: #007BFF;
+    color: white;
+    margin-top: 30px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .personal-profile .delete-account-btn {
     background-color: red;
     color: white;

@@ -1,5 +1,7 @@
 package com.example.secure_password_vault.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +42,8 @@ public class UserController {
 	}
 	
 	@PutMapping
-	public ResponseEntity<ShowUserDto> updateDatasUser(HttpServletRequest request, @Valid @ModelAttribute UpdateDatasUserDto updateDto) {
-		ShowUserDto updatedDatasUser = userService.updateDatasUser(request, updateDto);
-		return ResponseEntity.status(200).body(updatedDatasUser);
+	public ResponseEntity<Map<String, Object>> updateDatasUser(HttpServletRequest request, @Valid @ModelAttribute UpdateDatasUserDto updateDto) {
+	    return userService.updateDatasUser(request, updateDto);
 	}
 }
 

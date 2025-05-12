@@ -1,9 +1,10 @@
 package com.example.secure_password_vault.services;
 
-import java.util.Base64;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +15,7 @@ import com.example.secure_password_vault.dtos.user.ShowUserDto;
 import com.example.secure_password_vault.dtos.user.UpdateDatasUserDto;
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
+import com.example.secure_password_vault.security.TokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -27,6 +29,9 @@ public class UserService implements UserDetailsService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	TokenService tokenService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -66,51 +71,55 @@ public class UserService implements UserDetailsService {
 		 return new DeleteImageUserDto(null);
 	}
 	
-	public ShowUserDto updateDatasUser(HttpServletRequest request, UpdateDatasUserDto updateDto) {
-		long userId = (Long) request.getAttribute("userId");
-		
-		var user = userRepository.findById(userId)
-				.orElseThrow(() -> new NoSuchElementException("User not found"));
-	
-		//Verifica se o email que o usuário quer adicionar já existe no banco de dados
-		var existingUserDetails = userRepository.findByEmail(updateDto.email());
-		 if (existingUserDetails != null) {
-		        User existingUser = (User) existingUserDetails;
+	public ResponseEntity<Map<String, Object>> updateDatasUser(HttpServletRequest request, UpdateDatasUserDto updateDto) {
+	    long userId = (Long) request.getAttribute("userId");
 
-		        if (existingUser.getId() != user.getId()) {
-		            throw new IllegalArgumentException("Não foi possível atualizar os dados do usuário");
-		        }
-		    }
-		
-		user.setUsername(updateDto.username());
-		user.setEmail(updateDto.email());
-		//Encripta a nova senha
-		String encryptedPassword = passwordEncoder.encode(updateDto.password());
-		user.setPassword(encryptedPassword);
-		
-		
-		// Converte a imagem para Base64, se foi enviada
+	    User user = userRepository.findById(userId)
+	            .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+	    UserDetails existingUserDetails = userRepository.findByEmail(updateDto.email());
+	    if (existingUserDetails != null) {
+	        User existingUser = (User) existingUserDetails; // Casting para User
+	        if (existingUser.getId() != user.getId()) {
+	            throw new IllegalArgumentException("Não foi possível atualizar os dados do usuário");
+	        }
+	    }
+
+	    user.setUsername(updateDto.username());
+	    user.setEmail(updateDto.email());
+
+	    if (updateDto.password() != null && !updateDto.password().isBlank()) {
+	        String encryptedPassword = passwordEncoder.encode(updateDto.password());
+	        user.setPassword(encryptedPassword);
+	    }
+
 	    if (updateDto.imageUser() != null && !updateDto.imageUser().isEmpty()) {
 	        try {
-	        	//Remove a imagem antiga, se existir
-	        	if(user.getImageUser() != null) {
-	        		imageStorageService.deleteImage(user.getImageUser());
-	        	}
-	        	
-	        	String imagePath = imageStorageService.saveImage(updateDto.imageUser());
-	        	user.setImageUser(imagePath);
+	            if (user.getImageUser() != null) {
+	                imageStorageService.deleteImage(user.getImageUser());
+	            }
+	            String imagePath = imageStorageService.saveImage(updateDto.imageUser());
+	            user.setImageUser(imagePath);
 	        } catch (Exception e) {
 	            throw new RuntimeException("Erro ao processar a imagem", e);
 	        }
 	    }
-		
-		userRepository.save(user);
-		
-		return new ShowUserDto(
-				user.getUsername(), 
-				user.getEmail(), 
-				null, 
-				user.getPassword()
-		);
+
+	    userRepository.save(user);
+
+	    String newToken = tokenService.generateToken(user); // Gera novo token com novo e-mail
+
+	    ShowUserDto userDto = new ShowUserDto(
+	            user.getUsername(),
+	            user.getEmail(),
+	            null,
+	            user.getPassword()
+	    );
+
+	    return ResponseEntity.ok(Map.of(
+	            "token", newToken,
+	            "user", userDto
+	    ));
 	}
+
 }

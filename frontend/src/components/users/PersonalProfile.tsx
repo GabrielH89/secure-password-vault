@@ -2,12 +2,15 @@ import { useUserData } from "../../utils/useUserData"
 import "../../styles/users/PersonalProfile.css";
 import { FaPen, FaUserCircle } from "react-icons/fa";
 import { useRef, useState } from "react";
+import UpdateDatas from "./UpdateDatas";
+import Modal from "./Modal";
 
 function PersonalProfile() {
     const {userName, userEmail, imageUser} = useUserData();
     const API_URL = import.meta.env.VITE_API_URL;
     const [showOptions, setShowOptions] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const[isUpdateDatasOpen, setIsUpdateDatasOpen] = useState(false);
 
     const handleImageClick = () => {
         setShowOptions((prev) => !prev);
@@ -71,8 +74,19 @@ function PersonalProfile() {
 
             <label>Senha</label>
             <input type='password' disabled></input>
-
-            <button className="delete-account-btn">Deletar conta</button>
+            
+            <div className="div-personal-profile-btn">
+                <button className="update-account-btn" onClick={() => setIsUpdateDatasOpen(true)}>
+                    Atualizar dados
+                </button>
+                <Modal isOpen={isUpdateDatasOpen} onClose={() => setIsUpdateDatasOpen(false)}>
+                    <UpdateDatas
+                        onClose={() => setIsUpdateDatasOpen(false)}
+                    />
+                </Modal>
+                <button className="delete-account-btn">Deletar conta</button>
+            </div>
+            
         </div>
     )
 }
