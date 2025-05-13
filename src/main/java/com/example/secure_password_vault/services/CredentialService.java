@@ -3,10 +3,12 @@ package com.example.secure_password_vault.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
@@ -30,15 +32,16 @@ public class CredentialService {
 	@Autowired
 	UserRepository userRepository;
 	
-	public List<ShowCredentialDto> getAllCredentials(HttpServletRequest request) {
+	public List<ShowCredentialDto> getPaginatedCredentials (HttpServletRequest request, int page) {
 		long userId = (Long) request.getAttribute("userId");
-	        
-		List<Credential> credentials = credentialRepository.findByUserIdOrderByPosition(userId);
 		
-		if(credentials.isEmpty()) {
+		Pageable pageable = PageRequest.of(page, 12);
+		Page<Credential> pagedCredentials = credentialRepository.findByUserIdOrderByPosition(userId, pageable);
+		
+		if(pagedCredentials.isEmpty()) {
 			throw new EmptyListException("Credentials not found");
 		}else {
-			return credentials.stream()
+			return pagedCredentials.stream()
 					.map(credential -> new ShowCredentialDto(
 							credential.getId_password(),
 							credential.getSystemName(), 
@@ -46,7 +49,7 @@ public class CredentialService {
 							credential.getCreatedAt(), 
 							credential.getUpdatedAt()))
 					.collect(Collectors.toList());
-		}	
+		}
 	}
 	
 	public ShowCredentialDto getCredentialById(HttpServletRequest request, long id) {

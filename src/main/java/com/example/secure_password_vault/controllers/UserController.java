@@ -7,16 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.secure_password_vault.dtos.user.DeleteImageUserDto;
 import com.example.secure_password_vault.dtos.user.ShowUserDto;
 import com.example.secure_password_vault.dtos.user.UpdateDatasUserDto;
-import com.example.secure_password_vault.services.CredentialService;
 import com.example.secure_password_vault.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

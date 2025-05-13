@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
@@ -18,8 +19,6 @@ import com.example.secure_password_vault.dtos.credential.ShowCredentialDto;
 import com.example.secure_password_vault.dtos.credential.UpdateCredentialDto;
 import com.example.secure_password_vault.entities.Credential;
 import com.example.secure_password_vault.services.CredentialService;
-import com.example.secure_password_vault.services.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -31,8 +30,9 @@ public class CredentialController {
 	CredentialService credentialService;
 	
 	@GetMapping
-	public List<ShowCredentialDto> getAll(HttpServletRequest request) {
-		return credentialService.getAllCredentials(request);
+	public ResponseEntity<List<ShowCredentialDto>> getAllPaginated(HttpServletRequest request, @RequestParam(defaultValue = "0") int page) {
+		List<ShowCredentialDto> paginatedCredentials = credentialService.getPaginatedCredentials(request, page);
+		return ResponseEntity.ok(paginatedCredentials);
 	}
 	
 	@GetMapping("/{id}")

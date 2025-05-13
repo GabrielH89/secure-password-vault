@@ -9,6 +9,7 @@ import DeleteAllCredentials from "./DeleteAllCredentials";
 import { useUserData } from "../../utils/useUserData";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
+import Pagination from "./Pagination";
 
 interface Credential {
   id_password: number;
@@ -29,6 +30,9 @@ function Home() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
   const navigate = useNavigate();
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -42,7 +46,7 @@ function Home() {
 
   console.log(userName)
   console.log(imageUser)
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchCredentials = async () => {
       try {
         const token = sessionStorage.getItem("token");
@@ -57,7 +61,32 @@ function Home() {
       }
     };
     fetchCredentials();
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+    const fetchCredentials = async () => {
+      try{  
+        const token = sessionStorage.getItem("token");
+        const response = await axios.get(`${API_URL}/credentials?page=${currentPage}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+
+        setCredentials(response.data);
+
+        const totalItems = parseInt(response.headers['x-total-count'], 10);
+        setTotalPages(Math.ceil(totalItems / 12))
+      }catch(error) {
+         console.log("Erro ao buscar credenciais: " + error);
+      }
+    };
+    fetchCredentials(); 
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const confirmDelete = (id: number) => {
     setCredentialToDelete(id);
@@ -206,6 +235,8 @@ function Home() {
           </div>
         ))}
       </div>
+
+      <Pagination currentPage={currentPage} onPageChange={handlePageChange}  totalPages={totalPages}/>
 
       {isEditCredentialOpen && credentialToEdit && (
         <Modal isOpen={isEditCredentialOpen} onClose={() => setIsEditCredentialOpen(false)}>
