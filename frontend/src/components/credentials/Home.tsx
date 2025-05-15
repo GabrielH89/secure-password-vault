@@ -46,22 +46,6 @@ function Home() {
 
   console.log(userName)
   console.log(imageUser)
-  /*useEffect(() => {
-    const fetchCredentials = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        const response = await axios.get(`${API_URL}/credentials`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCredentials(response.data);
-      } catch (error) {
-        console.log("Erro ao buscar credenciais: " + error);
-      }
-    };
-    fetchCredentials();
-  }, []);*/
 
   useEffect(() => {
     const fetchCredentials = async () => {
