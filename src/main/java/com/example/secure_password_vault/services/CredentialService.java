@@ -6,6 +6,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +35,7 @@ public class CredentialService {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Cacheable(value = "credential", key = "#request.getAttribute('userId') + '_' + #page")
 	public List<ShowCredentialDto> getPaginatedCredentials (HttpServletRequest request, int page) {
 		long userId = (Long) request.getAttribute("userId");
 		
@@ -52,6 +56,7 @@ public class CredentialService {
 		}
 	}
 	
+	@Cacheable(value = "credential", key = "#id")
 	public ShowCredentialDto getCredentialById(HttpServletRequest request, long id) {
 		long userId = (Long) request.getAttribute("userId");
 		
@@ -72,6 +77,8 @@ public class CredentialService {
 	}
 	
 	@Transactional
+	@CachePut(value = "credential", key = "#result.id_password")  // atualiza cache do item criado
+	@CacheEvict(value = "credential", allEntries = true) // limpa cache da lista paginada para recarregar atualizada
 	 public ShowCredentialDto createCredential(CreateCredentialDto createCredentialDto, HttpServletRequest request) throws RuntimeException {
 	        // Extrai o ID do usuário da requisição
 	        long userId = (Long) request.getAttribute("userId");
@@ -89,7 +96,8 @@ public class CredentialService {
 	        		credentialSaved.getCreatedAt(), credentialSaved.getUpdatedAt());
 	    }
 
-	
+	@CachePut(value = "credential", key = "#id") // atualiza cache do item atualizado
+	@CacheEvict(value = "credential", allEntries = true) // limpa cache da lista paginada para atualizar
 	public ShowCredentialDto updateCredentialById(HttpServletRequest request, long id, UpdateCredentialDto updateCredentialDto) {
 		long userId = (Long) request.getAttribute("userId");
 		
@@ -117,6 +125,7 @@ public class CredentialService {
 		);
 	}
 	
+	@CacheEvict(value = "credential", allEntries = true) 
 	public void deleteAllCredentials(HttpServletRequest request) {
 		long userId = (Long) request.getAttribute("userId");
 		List<Credential> credentials = credentialRepository.findByUserId(userId);
@@ -127,6 +136,8 @@ public class CredentialService {
 		credentialRepository.deleteAll(credentials);
 	}
 	
+	
+	@CacheEvict(value = "credential", key = "#id")          // remove cache do item deletado
 	public void deleteCredentialById(HttpServletRequest request, long id) {
 		long userId = (Long) request.getAttribute("userId");
 
@@ -141,6 +152,7 @@ public class CredentialService {
 	    credentialRepository.deleteById(id);
 	}
 	
+	@CacheEvict(value = "credential", allEntries = true) // limpa cache para refletir nova ordem
 	public List<Credential> reorderCredential(List<Long> orderedIds, HttpServletRequest request) {
 	    long userId = (Long) request.getAttribute("userId");
 	    List<Credential> credentialsToSave = new ArrayList<>();
