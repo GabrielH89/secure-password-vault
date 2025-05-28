@@ -3,6 +3,7 @@ package com.example.secure_password_vault.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -16,7 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
- import com.example.secure_password_vault.dtos.user.ShowUserDto;
+import com.example.secure_password_vault.dtos.user.DeleteImageUserDto;
+import com.example.secure_password_vault.dtos.user.ShowUserDto;
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
 import com.example.secure_password_vault.security.TokenService;
@@ -51,6 +53,7 @@ public class UserServiceTest {
 		MockitoAnnotations.openMocks(this);
 	}
 	
+	//Tests for getUserById function
 	@Test
 	void shouldReturnUserWhenUserIdIsValid() {
 		Long userId  = 1L;
@@ -66,8 +69,11 @@ public class UserServiceTest {
 	    
 	    ShowUserDto result = userService.getUserById(request);
 	    
+	    assertEquals(userId, user.getId());
 	    assertEquals("Gabriel", result.username());
 	    assertEquals("gabriel@example.com", result.email());
+	    assertEquals("encodedPassword", result.password());
+	    assertEquals("image.png", result.imageUser());
 	}
 	
 	@Test
@@ -89,4 +95,65 @@ public class UserServiceTest {
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getUserById(request));
 		assertEquals("User not found", exception.getMessage());
 	}
+	
+	//Tests for deleteImageUser function
+	@Test 
+	void shouldDeleteUserImageWithSuccess() {
+		Long userId = 1L;
+	    User user = new User();
+	    user.setId(userId);
+	   
+	    user.setImageUser("image.png");
+	    
+	    when(request.getAttribute("userId")).thenReturn(userId);
+	    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+	    
+	    DeleteImageUserDto response = userService.deleteImageUser(request);
+	    
+	    assertEquals(userId, user.getId());
+	    assertEquals(null, user.getImageUser());
+	    assertEquals(null, response.imageUser());
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenUserIsNotFoundOnDeleteImage() {
+		when(request.getAttribute("userId")).thenReturn(null);
+		
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteImageUser(request));
+		    
+		assertEquals("User not found", exception.getMessage());
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenImageIsNotFound() {
+		Long userId = 1L;
+		when(request.getAttribute("userId")).thenReturn(userId);
+		when(userRepository.findById(userId)).thenReturn(Optional.empty());
+		
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteImageUser(request));
+		assertEquals("User not found", exception.getMessage());
+	}
+	
+	@Test
+	void shouldThrowRuntimeExceptionWhenImageDeletionFails() {
+		 Long userId = 1L;
+		    User user = new User();
+		    user.setId(userId);
+		    user.setImageUser("image.png");
+
+		    when(request.getAttribute("userId")).thenReturn(userId);
+		    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+		    // Simula erro ao deletar imagem
+		    doThrow(new RuntimeException("Erro")).when(imageStorageService).deleteImage("image.png");
+
+		    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+		        userService.deleteImageUser(request);
+		    });
+
+		    assertEquals("Erro ao processar a imagem", exception.getMessage());
+		    assertEquals("image.png", user.getImageUser());
+	}
 }
+
+
+
