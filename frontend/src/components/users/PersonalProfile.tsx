@@ -133,9 +133,6 @@ function PersonalProfile() {
             <label>Email</label>
             <input type='email' value={userEmail} disabled />
 
-            <label>Senha</label>
-            <input type='password' disabled />
-
             <div className="div-personal-profile-btn">
                 <button className="update-account-btn" onClick={() => setIsUpdateDatasOpen(true)}>
                     Atualizar dados

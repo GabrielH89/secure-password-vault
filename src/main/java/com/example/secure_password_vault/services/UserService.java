@@ -51,8 +51,7 @@ public class UserService implements UserDetailsService {
 	    return new ShowUserDto(
 	        user.getUsername(),
 	        user.getEmail(),
-	        user.getImageUser(),
-	        user.getPassword()
+	        user.getImageUser()
 	    );
 	}
 	
@@ -86,6 +85,7 @@ public class UserService implements UserDetailsService {
 	    User user = userRepository.findById(userId)
 	            .orElseThrow(() -> new NoSuchElementException("User not found"));
 
+	    
 	    UserDetails existingUserDetails = userRepository.findByEmail(updateDto.email());
 	    if (existingUserDetails != null) {
 	        User existingUser = (User) existingUserDetails; // Casting para User
@@ -121,8 +121,7 @@ public class UserService implements UserDetailsService {
 	    ShowUserDto userDto = new ShowUserDto(
 	            user.getUsername(),
 	            user.getEmail(),
-	            null,
-	            user.getPassword()
+	            null
 	    );
 
 	    return ResponseEntity.ok(Map.of(

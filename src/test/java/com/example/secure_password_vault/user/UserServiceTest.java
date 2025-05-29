@@ -6,6 +6,7 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.secure_password_vault.dtos.user.DeleteImageUserDto;
 import com.example.secure_password_vault.dtos.user.ShowUserDto;
+import com.example.secure_password_vault.dtos.user.UpdateDatasUserDto;
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.repositories.UserRepository;
 import com.example.secure_password_vault.security.TokenService;
@@ -72,7 +75,6 @@ public class UserServiceTest {
 	    assertEquals(userId, user.getId());
 	    assertEquals("Gabriel", result.username());
 	    assertEquals("gabriel@example.com", result.email());
-	    assertEquals("encodedPassword", result.password());
 	    assertEquals("image.png", result.imageUser());
 	}
 	
@@ -136,7 +138,7 @@ public class UserServiceTest {
 	
 	@Test
 	void shouldThrowRuntimeExceptionWhenImageDeletionFails() {
-		 Long userId = 1L;
+		 	Long userId = 1L;
 		    User user = new User();
 		    user.setId(userId);
 		    user.setImageUser("image.png");
@@ -153,6 +155,7 @@ public class UserServiceTest {
 		    assertEquals("Erro ao processar a imagem", exception.getMessage());
 		    assertEquals("image.png", user.getImageUser());
 	}
+	
 }
 
 
