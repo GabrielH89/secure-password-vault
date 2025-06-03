@@ -36,25 +36,32 @@ public class CredentialService {
 	UserRepository userRepository;
 	
 	@Cacheable(value = "credential", key = "#request.getAttribute('userId') + '_' + #page")
-	public List<ShowCredentialDto> getPaginatedCredentials (HttpServletRequest request, int page) {
-		long userId = (Long) request.getAttribute("userId");
-		
-		Pageable pageable = PageRequest.of(page, 12);
-		Page<Credential> pagedCredentials = credentialRepository.findByUserIdOrderByPosition(userId, pageable);
-		
-		if(pagedCredentials.isEmpty()) {
-			throw new EmptyListException("Credentials not found");
-		}else {
-			return pagedCredentials.stream()
-					.map(credential -> new ShowCredentialDto(
-							credential.getId_password(),
-							credential.getSystemName(), 
-							credential.getPasswordBody(), 
-							credential.getCreatedAt(), 
-							credential.getUpdatedAt()))
-					.collect(Collectors.toList());
-		}
+	public List<ShowCredentialDto> getPaginatedCredentials(HttpServletRequest request, int page) {
+	    long start = System.currentTimeMillis();  // tempo inicial
+	    
+	    long userId = (Long) request.getAttribute("userId");
+	    Pageable pageable = PageRequest.of(page, 12);
+	    Page<Credential> pagedCredentials = credentialRepository.findByUserIdOrderByPosition(userId, pageable);
+	    
+	    if(pagedCredentials.isEmpty()) {
+	        throw new EmptyListException("Credentials not found");
+	    }
+	    
+	    List<ShowCredentialDto> result = pagedCredentials.stream()
+	            .map(credential -> new ShowCredentialDto(
+	                    credential.getId_password(),
+	                    credential.getSystemName(),
+	                    credential.getPasswordBody(),
+	                    credential.getCreatedAt(),
+	                    credential.getUpdatedAt()))
+	            .collect(Collectors.toList());
+	    
+	    long end = System.currentTimeMillis();  // tempo final
+	    System.out.println("Tempo para buscar página " + page + ": " + (end - start) + "ms");
+	    
+	    return result;
 	}
+
 	
 	@Cacheable(value = "credential", key = "#id")
 	public ShowCredentialDto getCredentialById(HttpServletRequest request, long id) {
