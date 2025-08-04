@@ -83,7 +83,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	@DisplayName("SHould return an error message if user id is not valid")
+	@DisplayName("Should return an error message if user id is not valid")
 	void shouldThrowExceptionWhenUserIdIsMissing() {
 	    when(request.getAttribute("userId")).thenReturn(null);
 	    

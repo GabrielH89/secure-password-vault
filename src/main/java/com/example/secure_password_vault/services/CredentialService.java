@@ -36,9 +36,7 @@ public class CredentialService {
 	UserRepository userRepository;
 	
 	@Cacheable(value = "credential", key = "#request.getAttribute('userId') + '_' + #page")
-	public List<ShowCredentialDto> getPaginatedCredentials(HttpServletRequest request, int page) {
-	    long start = System.currentTimeMillis();  // tempo inicial
-	    
+	public List<ShowCredentialDto> getPaginatedCredentials(HttpServletRequest request, int page) {	    
 	    long userId = (Long) request.getAttribute("userId");
 	    Pageable pageable = PageRequest.of(page, 12);
 	    Page<Credential> pagedCredentials = credentialRepository.findByUserIdOrderByPosition(userId, pageable);
@@ -55,9 +53,6 @@ public class CredentialService {
 	                    credential.getCreatedAt(),
 	                    credential.getUpdatedAt()))
 	            .collect(Collectors.toList());
-	    
-	    long end = System.currentTimeMillis();  // tempo final
-	    System.out.println("Tempo para buscar página " + page + ": " + (end - start) + "ms");
 	    
 	    return result;
 	}
