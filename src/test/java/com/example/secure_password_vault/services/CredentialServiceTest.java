@@ -4,7 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.springframework.data.domain.Pageable;
@@ -26,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.example.secure_password_vault.dtos.credential.CreateCredentialDto;
 import com.example.secure_password_vault.dtos.credential.ShowCredentialDto;
+import com.example.secure_password_vault.dtos.credential.UpdateCredentialDto;
 import com.example.secure_password_vault.entities.Credential;
 import com.example.secure_password_vault.entities.User;
 import com.example.secure_password_vault.exceptions.EmptyListException;
@@ -228,6 +233,133 @@ public class CredentialServiceTest {
 	    assertThrows(RuntimeException.class, () -> {
 	        credentialService.createCredential(dto, request);
 	    });
+	}
+	
+	//Tests for updateCredentialById function
+	@Test 
+	@DisplayName("Should update crecential with success")
+	void shouldUpdateCredential() {
+		 HttpServletRequest request = mock(HttpServletRequest.class);
+		    when(request.getAttribute("userId")).thenReturn(1L);
+
+		    Credential credential = new Credential("Old System", "oldPass");
+		    credential.setId_password(10L);
+		    credential.setCreatedAt(java.time.LocalDateTime.now().minusDays(1));
+
+		    User user = new User();
+		    user.setId(1L);
+		    credential.setUser(user);
+
+		    when(credentialRepository.findById(10L)).thenReturn(Optional.of(credential));
+
+		    UpdateCredentialDto updateDto = new UpdateCredentialDto(
+		        "New System",
+		        "newPass",
+		        java.time.LocalDateTime.now()
+		    );
+
+		    when(credentialRepository.save(any(Credential.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		    ShowCredentialDto result = credentialService.updateCredentialById(request, 10L, updateDto);
+
+		    assertEquals(10L, result.id_password());
+		    assertEquals("New System", result.systemName());
+		    assertEquals("newPass", result.passwordBody());
+		    assertEquals(updateDto.updateAt(), result.updateAt()); 
+	}
+	
+	@Test
+	@DisplayName("Should throw NoSuchElementException when credential is not found")
+	void shouldThrowWhenCredentialNotFoundOnUpdate() {
+	    HttpServletRequest request = mock(HttpServletRequest.class);
+	    when(request.getAttribute("userId")).thenReturn(1L);
+
+	    when(credentialRepository.findById(99L)).thenReturn(Optional.empty());
+
+	    UpdateCredentialDto updateDto = new UpdateCredentialDto("System", "pass", java.time.LocalDateTime.now());
+
+	    assertThrows(NoSuchElementException.class, () -> {
+	        credentialService.updateCredentialById(request, 99L, updateDto);
+	    });
+	}
+	
+	@Test
+	@DisplayName("Should throw SecurityException when user is not the owner of the credential on update")
+	void shouldThrowWhenUserIsNotOwnerOnUpdate() {
+	    HttpServletRequest request = mock(HttpServletRequest.class);
+	    when(request.getAttribute("userId")).thenReturn(1L);
+
+	    Credential credential = new Credential("System", "pass");
+	    credential.setId_password(10L);
+
+	    User otherUser = new User();
+	    otherUser.setId(2L); // outro dono
+	    credential.setUser(otherUser);
+
+	    when(credentialRepository.findById(10L)).thenReturn(Optional.of(credential));
+
+	    UpdateCredentialDto updateDto = new UpdateCredentialDto("New", "pass", java.time.LocalDateTime.now());
+
+	    assertThrows(SecurityException.class, () -> {
+	        credentialService.updateCredentialById(request, 10L, updateDto);
+	    });
+	}
+	
+	@Test
+	@DisplayName("Should delete credential successfully when user is owner")
+	void shouldDeleteCredentialSuccessfullyWhenUserIsOwner() {
+	    HttpServletRequest request = mock(HttpServletRequest.class);
+	    when(request.getAttribute("userId")).thenReturn(1L);
+
+	    Credential credential = new Credential("System", "pass");
+	    credential.setId_password(10L);
+
+	    User user = new User();
+	    user.setId(1L);
+	    credential.setUser(user);
+
+	    when(credentialRepository.findById(10L)).thenReturn(Optional.of(credential));
+
+	    credentialService.deleteCredentialById(request, 10L);
+	    
+	    verify(credentialRepository, times(1)).deleteById(10L);
+	}
+	
+	@Test
+	@DisplayName("Should throw NoSuchElementException when credential is not found on delete")
+	void shouldThrowWhenCredentialNotFoundOnDelete() {
+	    HttpServletRequest request = mock(HttpServletRequest.class);
+	    when(request.getAttribute("userId")).thenReturn(1L);
+
+	    when(credentialRepository.findById(99L)).thenReturn(Optional.empty());
+
+	    assertThrows(NoSuchElementException.class, () -> {
+	        credentialService.deleteCredentialById(request, 99L);
+	    });
+
+	    verify(credentialRepository, never()).deleteById(anyLong());
+	}
+
+	@Test
+	@DisplayName("Should throw SecurityException when user is not the owner on delete")
+	void shouldThrowWhenUserIsNotOwnerOnDelete() {
+	    HttpServletRequest request = mock(HttpServletRequest.class);
+	    when(request.getAttribute("userId")).thenReturn(1L);
+
+	    Credential credential = new Credential("System", "pass");
+	    credential.setId_password(10L);
+
+	    User otherUser = new User();
+	    otherUser.setId(2L); // Outro dono
+	    credential.setUser(otherUser);
+
+	    when(credentialRepository.findById(10L)).thenReturn(Optional.of(credential));
+
+	    assertThrows(SecurityException.class, () -> {
+	        credentialService.deleteCredentialById(request, 10L);
+	    });
+
+	    verify(credentialRepository, never()).deleteById(anyLong());
 	}
 
 }
