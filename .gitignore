@@ -5,6 +5,9 @@ target/
 !**/src/test/**/target/
 /uploads
 
+#Arquivos de confiração sensíveis
+.env
+
 ### STS ###
 .apt_generated
 .classpath
